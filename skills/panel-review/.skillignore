@@ -1,0 +1,7 @@
+# Files in this skill that are dev-facing and must NOT be copied into
+# ~/.claude/skills/<skill>/ when installing. Patterns are file-name globs,
+# matched anywhere in the skill tree (robocopy /XF semantics).
+# Lines starting with # are comments. Blank lines ignored.
+
+AGENT.md
+README.md

@@ -34,6 +34,11 @@ cp -r skills/panel-review ~/.claude/skills/
 Copy-Item -Recurse skills\panel-review $env:USERPROFILE\.claude\skills\
 ```
 
+Each skill may include a `.skillignore` listing files that are
+dev-facing only (e.g. `AGENT.md`, `README.md`) and not needed at
+runtime. The eventual installer will honour it; for manual copies you
+can delete those files from the destination afterwards.
+
 ## Licence
 
 Apache-2.0. See [LICENSE](LICENSE).
