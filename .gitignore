@@ -1,0 +1,15 @@
+# Plans
+.plans/
+
+# panel-review skill output
+.panel-reviews/
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Editor noise
+*.swp
+*~
+.vscode/
+.idea/
