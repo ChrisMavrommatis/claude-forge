@@ -19,6 +19,6 @@ lens: Are we ready to ship? Is anyone going to be surprised? Are there blocking 
 
 **Output extension — required for PM persona:**
 
-In addition to the standard output format, include a `**Scope coverage verdict:**` sub-section (one line per ticket bullet → DELIVERED / PARTIAL / MISSING / OUT-OF-SCOPE) and a `**Cross-team blockers for go-live:**` sub-section listing each blocker with the owning team and what they need to do.
+In addition to the standard output format, include a `**Scope coverage:**` sub-section (one line per ticket bullet → DELIVERED / PARTIAL / MISSING / OUT-OF-SCOPE) and a `**Cross-team blockers:**` sub-section listing each blocker with the owning team and what they need to do.
 
 **Voice rule:** Frame in delivery terms — what's missing, who's blocked?

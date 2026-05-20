@@ -19,6 +19,6 @@ lens: What can break in QA or prod that the tests don't catch? What scenarios am
 
 **Output extension — required for QA persona:**
 
-In addition to the standard output format, include a `**Test coverage gaps:**` sub-section listing concrete tests you'd add, and a `**Manual verification readiness:**` sub-section flagging each demo step as `ready / needs more info / has blockers`.
+In addition to the standard output format, include a `**Test gaps:**` sub-section listing concrete tests you'd add, and a `**Demo readiness:**` sub-section flagging each demo step as `ready / needs more info / has blockers`.
 
 **Voice rule:** Frame in test terms — what would you add or verify?

@@ -31,7 +31,7 @@ Dispatches multiple persona-tailored review agents in parallel and consolidates 
 
 - `target` - what to review (see table below). Defaults to working-tree diff vs HEAD.
 - `--personas=<list>` - comma-separated. Default: every persona with `tier: required` in `personas/`.
-- `--details` - skip the "Want per-persona details?" prompt; print the per-persona cards immediately.
+- `--details` - skip the iteration prompt at the end of the summary; print all per-persona cards immediately.
 - `--explain <persona>` - drill into a single persona for deeper analysis. Full spec in [details.md](details.md); typically run after a panel review.
 - `--accept-veto="<reason>"` - non-interactive acknowledgment of all panel vetos with a single reason. No-op if no veto fires. Full flow in [veto.md](veto.md); only relevant when a veto-eligible persona is in the panel.
 - `--model=<sonnet|opus|haiku>` - which model the personas run on. Default: `sonnet`. Use `opus` for high-stakes pre-PR passes where catch-rate matters more than cost. `haiku` is accepted but advised against - it tends to miss the subtler convergent issues that are the point of multi-lens review.
@@ -88,7 +88,7 @@ See [templates/persona.md](templates/persona.md) for the file shape, frontmatter
    - Bump to **REJECT** if any veto-eligible persona escalated a finding to veto-level.
 
    If any veto fires (i.e. any active persona has `veto: true` in its frontmatter), read [veto.md](veto.md) for the persona-side requirements, override flow, and `HOLD†` rendering. Don't read it otherwise.
-8. **Print the console output** per the layout in [Console output](#console-output) below. Always print the summary. If `--details` was passed (or the user answers yes to the prompt), also print the per-persona cards per [details.md](details.md). Otherwise, end with "Want per-persona details?" and wait for the user.
+8. **Print the console output** per the layout in [Console output](#console-output) below. Always print the summary. If `--details` was passed, also print the per-persona cards per [details.md](details.md). Otherwise, end with the iteration prompt (`all` / `<PERSONA>` / `no`) and wait for the user's reply.
 
 ## Size guard
 
@@ -154,7 +154,7 @@ The size guard applies to `--explain` runs the same way. A single-persona deep d
 
 ## Mandatory output format (per persona)
 
-Every persona MUST return findings in this shape — the orchestrator parses this to build the console cards:
+Every persona MUST return findings in this shape — the orchestrator parses this to build the console output:
 
 ```
 ## <Persona> review
@@ -165,11 +165,16 @@ Every persona MUST return findings in this shape — the orchestrator parses thi
 **Issues:** <one-line summary of what needs work, or "none worth flagging">
 
 **Top concerns (ordered by importance, 3-5 items):**
-- [BLOCK] <concern> — <rationale + file:line ref where relevant>
-- [DEFER] <concern> — <rationale + file:line>
-- [INFO] <concern> — <rationale + file:line>
+- [BLOCK] <concern title>
+  - file:line — <file:line ref where relevant; omit when not file-localised>
+  - note — <optional code excerpt, fix suggestion, or short rationale>
+- [DEFER] <concern title>
+  - file:line — <ref>
+  - note — <optional>
+- [INFO] <concern title>
+  - file:line — <ref>
 
-Each concern is tagged with its severity ([BLOCK] / [DEFER] / [INFO]). The orchestrator uses these to assign tags in the TOP block and to compute the verdict.
+The orchestrator maps these to the rendered output: `file:line` items become `·` sub-bullets, `note` items become `>` sub-bullets. Multiple `note` items per concern are allowed. See [templates/overview/top-issues.md](templates/overview/top-issues.md) for the rendered shape.
 
 **Open questions:**
 - <questions for the team; omit if none>
@@ -199,6 +204,25 @@ Three plain-text tags used throughout:
 
 An appended `*` (e.g. `[BLOCK*]`) marks a finding raised by a single persona — a specialist's solo call. Without `*`, the finding is convergent (2+ personas).
 
+### Layout primitives (one border, two width regimes)
+
+- **One bordered element only** — the `panel-overview` box. Every other section uses heading + single horizontal rule, no boxes.
+- **Header box and verdict table** are fixed-width — target 62 cols.
+- **Issue lines** are unconstrained — title runs as long as needed (target ≤ 190 chars). Hard-wrap with hanging indent at col 10 only if a title actually overflows.
+- **Three-layer indent for issues:** `[` and `*` at col 2 (gutter); `·` and `>` at col 7 (sub-bullet); title and sub-bullet content at col 10.
+- **Glyph legend:** `·` = file:line ref ("where"). `>` = code excerpt / note / rationale ("what / why"). `*` = personas line ("who"). `[` = new issue tag.
+
+### Verdict markers (verdict-table)
+
+| Glyph | Verdict | Width |
+| ----- | ------- | ----- |
+| `✓`   | SHIP    | 6     |
+| `▸`   | HOLD    | 6     |
+| `✗`   | REJECT  | 8     |
+| `!`   | FAILED  | 8     |
+
+The VERDICT column auto-sizes to the widest marker present. `[!]` (3-char token) is reserved for alert-section headings (veto, panel-failed, large change, refuse).
+
 ### Matching findings across personas
 
 For convergence ("caught by 2+ personas"), match by **root cause + file/line**, not by wording.
@@ -208,72 +232,144 @@ For convergence ("caught by 2+ personas"), match by **root cause + file/line**, 
 - Different file → **keep separate** even if symptoms look similar.
 - Unsure if findings match → **treat as distinct** (false negatives over false positives).
 
-When merging: pick the **most action-oriented framing** as the canonical title — the one that tells the reader *what to fix*, not what's broken or what the consequence is. The merged TOP entry shows that title plus `flagged by: <persona>, <persona>, ...`. Other framings drop from TOP; users see them by drilling in with `/panel-review --explain <persona>` or by expanding the per-persona cards in the details section.
+When merging: pick the **most action-oriented framing** as the canonical title. The merged TOP entry shows that title plus a `* BY: <persona>, <persona>` line. Other framings drop from TOP; users see them by drilling in with `/panel-review --explain <persona>` or by viewing the per-persona cards in the details section.
 
-**Severity on merged entries.** When personas disagree on severity, the merged TOP entry uses the **most severe** tag. If any persona said `[BLOCK]`, the entry is `[BLOCK]` regardless of what others said. One concerned reviewer trumps two indifferent ones.
+**Severity on merged entries.** When personas disagree on severity, the merged TOP entry uses the **most severe** tag. If any persona said `[BLOCK]`, the entry is `[BLOCK]` regardless of what others said.
 
-**Solo specialist findings.** A `[BLOCK]`-severity finding raised by a single persona (no convergence) still goes into TOP — marked with `*` (e.g. `[BLOCK*]`). The `flagged by:` line uses "X only" to make the solo status explicit. This catches genuinely critical specialist alerts (security finding a hardcoded secret, etc.) that nobody else has the lens for. Solo `[DEFER]` and `[INFO]` findings don't make TOP — they stay in per-persona cards.
+**Solo specialist findings.** A `[BLOCK]`-severity finding raised by a single persona (no convergence) still goes into TOP — marked with `*` (e.g. `[BLOCK*]`). The `* BY:` line uses "X (only)" to make the solo status explicit. Solo `[DEFER]` and `[INFO]` findings don't make TOP — they stay in per-persona cards.
 
-**Example.** Dev says *"OrderService.cs:42 — the discount calculation rounds wrong, customers can be overcharged by 1¢"*; QA says *"no test for rounding behaviour in OrderService.cs:42"*. Same file, same root cause → merge as:
+**Example.** Dev says *"OrderService.cs:42 — the discount calculation rounds wrong"*; QA says *"no test for rounding behaviour in OrderService.cs:42"*. Same file, same root cause → merge as:
 
-```
-- [BLOCK]  Discount rounding error in OrderService.cs:42
-           flagged by: Dev, QA
-```
-
-Dev's framing wins as the title because it points at *what to fix* (the calculation). QA's framing is dropped from TOP but stays visible in QA's persona card.
-
-### Summary (always printed)
-
-```
-╭─────────────────────────────────────────────────────────────────╮
-│  PANEL REVIEW                                                   │
-│  <target>  ·  <N> files  ·  <M> personas  ·  <T>s               │
-╰─────────────────────────────────────────────────────────────────╯
-
-  OVERALL:  <SHIP|HOLD|REJECT>     (<N> HOLD · <N> SHIP · <N> REJECT)
-
-  ┌────────────┬─────────┬─────────────────────────────────────┐
-  │ PERSONA    │ VERDICT │ REASON                              │
-  ├────────────┼─────────┼─────────────────────────────────────┤
-  │ DEV        │ <X>     │ <one-line reason, ≤37 chars>        │
-  │ TECH LEAD  │ <X>     │ <one-line reason, ≤37 chars>        │
-  │ ...        │ ...     │ ...                                 │
-  └────────────┴─────────┴─────────────────────────────────────┘
-
-  TOP ISSUES  (caught by 2+ personas)
-  ─────────────────────────────────────────────────────────────────
-
-  - [BLOCK]  <one-line issue title>
-             flagged by: <persona>, <persona>
-  - [BLOCK*] <one-line issue title>     (specialist solo, e.g. security alone)
-             flagged by: <persona> only
-  - [DEFER]  ...
-
-  Want per-persona details? (pass --details to skip this prompt)
+```text
+  [BLOCK] Discount rounding overcharges by 1¢ on odd totals
+  * BY: Dev, QA
+       ·  src/orders/OrderService.cs:42
+       >  Math.Floor(total * discount * 100) / 100  — truncates third decimal
 ```
 
-**Summary rules:**
+### Summary screen (always printed)
 
-- Rounded corners (`╭ ╮ ╰ ╯`) for the top banner; sharp corners (`┌ ┬ ┐ ─ ├ ┤ └ ┴ ┘ │`) for the verdict table.
+Composes three blocks from [templates/overview/](templates/overview/):
+
+1. **`panel-overview`** — rounded box with run-meta + `VERDICT:` + tally.
+   Spec: [templates/overview/panel-overview.md](templates/overview/panel-overview.md).
+2. **`verdict-table`** — minimal per-persona table.
+   Spec: [templates/overview/verdict-table.md](templates/overview/verdict-table.md).
+3. **`top-issues`** — presence-based, rendered only when there are findings worth surfacing.
+   Spec: [templates/overview/top-issues.md](templates/overview/top-issues.md).
+
+Followed by an iteration prompt (see below).
+
+### Example: clean SHIP
+
+```text
+╭─────────────────────────────────────────────────────────────╮
+│  PANEL REVIEW                                               │
+│  range:main..HEAD  ·  12 files  ·  5 personas               │
+│                                                             │
+│  VERDICT:  SHIP                                             │
+│  5 SHIP  ·  0 HOLD  ·  0 REJECT                             │
+╰─────────────────────────────────────────────────────────────╯
+
+
+  PERSONA      VERDICT     REASON
+  ─────────────────────────────────────────────────────────────
+  DEV          ✓ SHIP      clean impl, conventions respected
+  TECH LEAD    ✓ SHIP      fits existing pipeline shape
+  QA           ✓ SHIP      tests cover the new branches
+  PM           ✓ SHIP      scope matches the ticket
+  CLIENT       ✓ SHIP      no user-visible regression
+
+
+  Want details? Reply with:
+    - "all"        — show all per-persona cards
+    - "<PERSONA>"  — drill into one persona (e.g. "DEV")
+    - "no"         — done
+```
+
+### Example: HOLD with convergent issues
+
+```text
+╭─────────────────────────────────────────────────────────────╮
+│  PANEL REVIEW                                               │
+│  range:main..HEAD  ·  18 files  ·  5 personas               │
+│                                                             │
+│  VERDICT:  HOLD                                             │
+│  3 SHIP  ·  2 HOLD  ·  0 REJECT                             │
+╰─────────────────────────────────────────────────────────────╯
+
+
+  PERSONA      VERDICT     REASON
+  ─────────────────────────────────────────────────────────────
+  DEV          ▸ HOLD      rounding bug blocks ship
+  TECH LEAD    ✓ SHIP      ships, but null guard worth fixing
+  QA           ▸ HOLD      need test for rounding edge first
+  PM           ✓ SHIP      scope matches the ticket
+  CLIENT       ✓ SHIP      end-to-end story still works
+
+
+  TOP ISSUES — caught by 2+ personas
+  ─────────────────────────────────────────────────────────────
+
+  [BLOCK] Discount rounding overcharges by 1¢ on odd totals
+  * BY: Dev, QA
+       ·  src/orders/OrderService.cs:42
+       >  Math.Floor(total * discount * 100) / 100  — truncates third decimal
+  [DEFER] Null-guard missing on optional address line — could NPE on imports
+  * BY: Dev, Tech Lead
+       ·  src/orders/AddressMapper.cs:88
+
+
+  Want details? Reply with:
+    - "all"        — show all per-persona cards
+    - "<PERSONA>"  — drill into one persona (e.g. "DEV")
+    - "no"         — done
+```
+
+### Summary rules
+
 - `<target>` is whatever the user passed (e.g. `range:main..HEAD`), or `working-tree` if no arg.
-- Banner meta line: `<target> · <N> files · <M> personas · <T>s`. If any persona failed, append `+ <K> failed` to the personas count (see [failure.md](failure.md) for details).
-- The REASON column shows each persona's `Tagline` field (≤37 chars by spec). If a persona returns a tagline longer than 37 chars, truncate with `...`.
-- TOP block caps at 3 items. Selection priority: convergent items first (sorted `[BLOCK]` > `[DEFER]` > `[INFO]`), then solo `[BLOCK]` findings marked with `*` (e.g. `[BLOCK*]`). Solo `[DEFER]` and `[INFO]` findings stay in per-persona cards only.
-- If TOP would be empty (no convergent findings AND no solo `[BLOCK]` findings), replace it with `- (no critical findings — panel agrees there is nothing to block on)`.
-- After the TOP block, end with the "Want per-persona details?" prompt and wait for the user's reply, unless `--details` was passed. Accept any affirmative response ("yes", "y", "show me", "sure", a bare "ok") as a request for details.
+- Meta line in the box: `<target> · <N> files · <M> personas`. If any persona failed, append `+ <K> failed` (see [failure.md](failure.md)).
+- The REASON column shows each persona's `Tagline` field (≤ 37 chars). Truncate longer taglines with `...`.
+- **TOP block caps at 3 items.** Selection priority: convergent items first (`[BLOCK]` > `[DEFER]` > `[INFO]`), then solo `[BLOCK*]` findings. Solo `[DEFER]` and `[INFO]` stay in per-persona cards only.
+- **TOP block is presence-based.** Absent when there are no findings worth surfacing — no "(none found)" placeholder.
+- **Paren convention.** Short modifiers/annotations keep parens — `(only)`, `(security lens)`, `(accepted)`, `(gap, would add)`. Verdict-status appendices and section-heading suffixes use em-dash — `REJECT — veto pending`, `TOP ISSUES — caught by 2+ personas`.
+
+### Iteration prompt (end of every summary)
+
+Always end with:
+
+```text
+  Want details? Reply with:
+    - "all"        — show all per-persona cards
+    - "<PERSONA>"  — drill into one persona (e.g. "DEV")
+    - "no"         — done
+```
+
+- `"all"` → render Screen 5 (all per-persona cards) per [details.md](details.md).
+- `"<PERSONA>"` → render Screen 6 drill-in on that persona on Opus.
+- `"no"` (or skip) → done.
+- `--details` flag at invocation skips this prompt and renders all cards immediately.
 
 ### Per-persona details and drill-in
 
-Card layout and rules for `--details`, "yes" replies to the details prompt, and `--explain` drill-in live in [details.md](details.md). Read only when one of those triggers fires.
+Card layout and rules live in [details.md](details.md). Templates:
+- [templates/details/persona-card.md](templates/details/persona-card.md) — Screen 5.
+- [templates/details/drill-in-card.md](templates/details/drill-in-card.md) — Screen 6 (`--explain`).
+
+Read only when one of those triggers fires.
 
 ### Failure handling
 
-When one or more personas error out (timeout, rate-limit, refusal, network failure), render per [failure.md](failure.md). Includes the compact failure card, tally/banner adjustments, and the all-personas-failed abort message. Read only when at least one persona fails.
+When one or more personas error out (timeout, rate-limit, refusal, network failure), render per [failure.md](failure.md). One-persona case is a `! FAILED` row in the verdict table plus an optional compact section in details. All-personas case aborts with [templates/alerts/panel-failed.md](templates/alerts/panel-failed.md). Read only when at least one persona fails.
+
+### Size guard
+
+Above warn / refuse thresholds, render [templates/alerts/size-guard.md](templates/alerts/size-guard.md) instead of dispatching. See [Size guard](#size-guard) section above for thresholds.
 
 ### Width and rendering
 
-Layout assumes Unicode box-drawing support and targets 80 columns minimum.
+Layout assumes Unicode box-drawing support. Header box and verdict table target 62 cols; issue lines target ≤ 190 chars unconstrained.
 
 ## Optional features (loaded on demand)
 
@@ -285,6 +381,25 @@ These features live in sibling files. Read each file only when its trigger condi
 | Failure handling    | [failure.md](failure.md)                     | At least one persona's dispatch errors out                                   |
 | Veto override       | [veto.md](veto.md)                           | Any active persona has `veto: true` in frontmatter                           |
 | Persona authoring   | [templates/persona.md](templates/persona.md) | User asks to create or modify a persona under `personas/`                    |
+
+### Output rendering templates
+
+The console layout is split across small per-block templates under
+`templates/`. Each template documents the literal shape, slots,
+and rules for one structural unit:
+
+| Category | Template | Used by |
+| -------- | -------- | ------- |
+| overview | [panel-overview.md](templates/overview/panel-overview.md) | Screens 1-4, 7 (the rounded header box) |
+| overview | [verdict-table.md](templates/overview/verdict-table.md)   | Screens 1-4, 7 (the minimal table)       |
+| overview | [top-issues.md](templates/overview/top-issues.md)         | Screens 1-4, 7 (the TOP block)           |
+| details  | [persona-card.md](templates/details/persona-card.md)      | Screen 5 (`--details`)                   |
+| details  | [drill-in-card.md](templates/details/drill-in-card.md)    | Screen 6 (`--explain`)                   |
+| alerts   | [veto-block.md](templates/alerts/veto-block.md)           | Screen 3 (active veto)                   |
+| alerts   | [panel-failed.md](templates/alerts/panel-failed.md)       | Screen 8 (all failed)                    |
+| alerts   | [size-guard.md](templates/alerts/size-guard.md)           | Screens 9-10 (warn / refuse)             |
+
+Read a template only when its block is about to render — they're not load-on-startup.
 
 ## Constraints
 

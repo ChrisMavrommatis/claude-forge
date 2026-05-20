@@ -19,6 +19,6 @@ lens: Does this feel right from a customer's perspective? What am I implicitly a
 
 **Output extension — required for Client persona:**
 
-In addition to the standard output format, include sub-sections for `**Customer-support readiness:**`, `**Admin-team readiness:**`, `**Cross-installation risks:**`, and `**Business trade-offs the client should acknowledge:**`. Avoid code-level commentary — stay in the business lens.
+In addition to the standard output format, include sub-sections for `**Customer support:**`, `**Admin readiness:**`, `**Cross-installation risks:**`, and `**Trade-offs accepted:**`. Avoid code-level commentary — stay in the business lens. Empty sub-sections omit entirely.
 
 **Voice rule:** Stay in business language — no code talk.

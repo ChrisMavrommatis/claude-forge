@@ -11,6 +11,7 @@ Multi-persona code review. The orchestrator dispatches several role-based sub-ag
 - **The orchestrator** is the Claude agent running this skill — it parses the target, dispatches personas, waits for results, consolidates, and prints.
 - **Personas** are sub-agents dispatched in parallel. Each gets its own `personas/<name>.md` injected verbatim plus the resolved target and the mandatory output format. They return structured findings.
 - **The skill is prompt-based.** There's no compiled code. The Markdown content IS the implementation. `SKILL.md` is the always-loaded core; sibling files (`details.md`, `failure.md`, `veto.md`, `templates/persona.md`) are lazy-loaded by trigger condition.
+- **Output is composed from per-block templates** under `templates/{overview,details,alerts}/`. Each template documents the literal shape, slots, and rules for one structural unit. Read a template only when its block is about to render — they're not load-on-startup.
 
 ## Where to look for what
 
@@ -20,11 +21,15 @@ Multi-persona code review. The orchestrator dispatches several role-based sub-ag
 | The execution flow                            | `SKILL.md` → How to execute                                |
 | Size-guard thresholds or counting             | `SKILL.md` → Size guard                                    |
 | The persona output contract                   | `SKILL.md` → Mandatory output format                       |
-| Summary banner / verdict table / TOP rules    | `SKILL.md` → Console output                                |
+| Summary layout / verdict table / TOP rules    | `SKILL.md` → Console output                                |
+| Header box (`panel-overview`)                 | `templates/overview/panel-overview.md`                     |
+| Per-persona table shape                       | `templates/overview/verdict-table.md`                      |
+| TOP-issues block shape (3-layer indent)       | `templates/overview/top-issues.md`                         |
 | A specific persona's lens, look-fors, voice   | `personas/<name>.md`                                       |
-| Per-persona card layout / drill-in            | `details.md`                                               |
-| Failure rendering / all-failed exit           | `failure.md`                                               |
-| Veto mechanism / override flow                | `veto.md`                                                  |
+| Per-persona section layout / drill-in         | `details.md` + `templates/details/{persona,drill-in}-card.md` |
+| Failure rendering / all-failed exit           | `failure.md` + `templates/alerts/panel-failed.md`          |
+| Veto mechanism / override flow                | `veto.md` + `templates/alerts/veto-block.md`               |
+| Size-guard warn / refuse render               | `templates/alerts/size-guard.md`                           |
 | Authoring a new persona                       | `templates/persona.md`                                     |
 
 ## Design history — the big calls
@@ -35,14 +40,15 @@ Multi-persona code review. The orchestrator dispatches several role-based sub-ag
 - **One canonical verdict rule.** Originally duplicated in SKILL.md step 7 and `veto.md`. Reconciled: SKILL.md is canonical; `veto.md` just describes how vetos hook into the REJECT branch and the `HOLD†` acknowledgment state.
 - **Veto is per-persona opt-in via frontmatter (`veto: true`).** No persona is veto-eligible by default. `security` ships with `veto: true` but is `tier: optional` — must be explicitly added to the panel for veto behaviour to fire. Keeps the skill portable for orgs whose gatekeepers differ.
 - **`security` is the only veto-eligible built-in.** QA was considered but rejected — QA's REJECT is usually about test-process gaps, not absolute defects; a HOLD is the right weight there.
-- **Unicode box-drawing over plain ASCII.** Original plan called for ASCII (universal terminal compat). Switched to Unicode for visual quality during design — the loss of legacy-terminal support is acceptable.
-- **Card width is a 64-char target, not a hard contract.** LLMs miscount characters occasionally; padding may drift 1-2 chars on edge cases. Documented as a known limit, not a spec violation.
+- **Minimal Unicode where it earns its place.** Just one bordered box (`panel-overview` with `╭ ╮ ╰ ╯` rounded corners); every other section uses heading + single horizontal rule + indented content. Single-glyph verdict markers (`✓ ▸ ✗ !`) for the verdict table; `[!]` token for alert headings (veto, panel-failed, large change, refuse). Earlier iterations had heavy double-line borders and full per-persona card boxes; those rendered poorly on narrow terminals and were dropped.
+- **Two width regimes.** Header box and verdict table at **62 cols** (structured columns rely on alignment). Issue lines **unconstrained** — title runs as long as needed (target ≤ 190 chars), hard-wraps with hanging indent at col 10 only if it overflows. Earlier "fixed 64-char card width" idea was dropped along with the card borders.
+- **Three-layer indent for findings.** `[` and `*` at col 2 (gutter — new issue tag, personas line). `·` and `>` at col 7 (sub-bullet — `·` file:line ref, `>` code/note/rationale). Title and sub-bullet content at col 10. The two glyphs in the gutter and the two glyphs at the sub-bullet column encode meaning so the eye can scan vertically for "who", "where", and "what".
 
 ## What's complete
 
 - Eight-step execute flow with size guard before dispatch.
 - Default model is Sonnet (Opus for `--explain`); `--model=<name>` overrides.
-- Summary always prints (banner + verdict table + TOP). Per-persona cards on request or `--details`.
+- Summary always prints (`panel-overview` box + verdict table + TOP issues when present). Per-persona sections on request (`"all"` reply or `--details`) or single-persona drill-in (reply with persona name or `--explain <PERSONA>`).
 - Drill-in via `--explain <persona>` for deeper single-persona analysis.
 - Severity tagging (`[BLOCK]` / `[DEFER]` / `[INFO]`) with `*` modifier for solo specialist findings.
 - Convergence detection with most-severe-wins on merge conflicts.

@@ -69,28 +69,51 @@ Acknowledged vetos move the verdict from REJECT to **HOLD†**, never to SHIP.
 
 ## Veto block (console)
 
-When one or more unacknowledged vetos fire, render this at the TOP of the report, before the banner. One block per veto:
+When one or more unacknowledged vetos fire, render the veto block(s)
+**above** the `panel-overview` box — the only content that ever
+pre-empts the run-meta. The block uses the alert-section pattern
+(no border, `[!]` heading + horizontal rule). Full shape spec at
+[templates/alerts/veto-block.md](templates/alerts/veto-block.md):
 
-```
-╔════════════════════════════════════════════════════════════════╗
-║  [!] VETO  ·  <PERSONA> says this should not ship              ║
-╚════════════════════════════════════════════════════════════════╝
+```text
+  [!] VETO  ·  <PERSONA> says this should not ship
+  ─────────────────────────────────────────────────────────────
 
-  Finding:
-    <finding name> (<file:line if available>)
+  Finding:  <finding title>
+       ·  <file:line if available>
 
-  Why this is veto-level in the <persona-name> lens:
+  Why veto-level (<persona-name> lens):
     <persona's veto rationale, verbatim from Veto-level findings>
 
-  To proceed, choose one:
+  To proceed:
     - Fix the issue and rerun.
-    - Override by replying:  accept veto: <your reason in one line>
+    - Reply:  accept veto: <your reason in one line>
     - Or pass --accept-veto="<reason>" on the next invocation.
 
   Until acknowledged, OVERALL stays REJECT.
 ```
 
-If multiple vetos fire, stack blocks in the standard panel order (required personas first, then optional, then custom alphabetical), and within a persona, in the order findings appeared in their Top concerns list.
+If multiple vetos fire, stack blocks in the standard panel order
+(required → optional → custom alphabetical), and within a persona,
+in the order findings appeared in their Top concerns list. The
+shared `To proceed:` instructions move to the end with an
+`(applies to all vetos above)` qualifier — don't repeat them per
+veto.
+
+### Companion: panel-overview verdict line
+
+The `panel-overview` box reflects the veto status:
+
+- Single active veto: `VERDICT:  REJECT — veto pending`
+- Multiple active vetos: `VERDICT:  REJECT — 2 vetos pending`
+- Tally suffix appends `· <N> veto` / `· <N> vetos` after the
+  REJECT count.
+
+### TOP-block marker
+
+The veto source appears in TOP block, sorted to the top, with
+`← veto source` after the title (pending) or `← veto source (accepted)`
+once acknowledged.
 
 ## Override flow
 
@@ -113,17 +136,40 @@ After the veto block(s), the orchestrator waits for the user's reply.
 
 ## Acknowledged-veto rendering
 
-When all vetos are acknowledged, the OVERALL line in the summary becomes:
+When all vetos are acknowledged, the veto block(s) disappear from
+the top of the screen. The `panel-overview` box grows to carry the
+acknowledged-veto footnote(s) inline, so the verdict and its caveats
+travel together:
 
-```
-OVERALL: HOLD†  (<N> HOLD · <N> SHIP · <N> REJECT · <K> veto acknowledged)
-                † <persona1>'s veto on <finding1> accepted by user:
-                  "<reason1>"
-                † <persona2>'s veto on <finding2> accepted by user:
-                  "<reason2>"
+```text
+╭─────────────────────────────────────────────────────────────╮
+│  PANEL REVIEW                                               │
+│  range:main..HEAD  ·  18 files  ·  6 personas               │
+│                                                             │
+│  VERDICT:  HOLD†                                            │
+│  2 SHIP  ·  2 HOLD  ·  1 REJECT  ·  1 veto acknowledged     │
+│                                                             │
+│  † Security's veto on "Hardcoded API key" accepted:         │
+│    "rotating key next sprint, monitored access in interim"  │
+╰─────────────────────────────────────────────────────────────╯
 ```
 
-The `†` marker MUST appear on the verdict line. Each acknowledged veto gets a footnote with the persona's name, finding, and the user's reason.
+- The `†` marker MUST appear on the verdict line. Without it the
+  user can't tell HOLD† apart from a fresh HOLD.
+- Each acknowledged veto gets a 2-line footnote inside the box:
+  the `†` summary line, then the indented reason quote (4 spaces
+  in from the box edge).
+- Footnote text uses a dense form (`"<title>" accepted:` not
+  `"<title>" accepted by user:`) to fit inside the 62-col box
+  without wrapping.
+- Tally suffix becomes `· <N> veto acknowledged` / `· <N> vetos
+  acknowledged` (mirroring the pending forms above).
+- The TOP-block marker shifts from `← veto source` to
+  `← veto source (accepted)` so the status is also visible there.
+
+Box height grows by 2 lines per acknowledged veto. That's the cost
+of keeping the explanation attached to the verdict instead of
+floating below it.
 
 ## --accept-veto no-op
 
@@ -136,3 +182,9 @@ If `--accept-veto="<reason>"` is passed but no veto fires, silently ignore it �
 - **One veto-eligible persona ran, no veto-level findings**: behaves as a normal persona.
 - **Veto-eligible persona has empty Veto criteria section**: treat as malformed; warn and degrade to non-veto for the run.
 - **`accept veto:` reply without a reason** (e.g. just "accept veto"): orchestrator prompts again asking for a reason. Reasons are mandatory.
+
+## See also
+
+- [templates/alerts/veto-block.md](templates/alerts/veto-block.md) — full shape of the pre-summary veto block with single and multi-veto layouts.
+- [templates/overview/panel-overview.md](templates/overview/panel-overview.md) — the `panel-overview` variants for `REJECT — veto pending`, `REJECT — 2 vetos pending`, and `HOLD†` with footnotes.
+- [templates/overview/top-issues.md](templates/overview/top-issues.md) — the `← veto source` marker convention in the TOP block.
