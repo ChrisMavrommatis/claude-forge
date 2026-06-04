@@ -1,0 +1,34 @@
+{
+  "_comment": "Template for ~/.claude/skills/cafe/profile.json. The barista creates this on first run. Each addon is a top-level block, self-contained — block present = addon enabled, block absent = addon off.",
+  "_addon_comment": "ado.projects[] carries { name, repos: [...] } per project. Off-by-default addons (m365) are omitted entirely from the profile until the user opts them in via the barista.",
+  "_budget_comment": "preferences.budget_ms is the soft cap on total brief wall-time. Catalog entries in addons/<name>.md carry per-call ms estimates; the barista warns at add-time when enabling a new call would push the predicted total over budget_ms. Default 5000ms is in the Web Vitals 'acceptable' range; raise if you tolerate slower briefs for richer content.",
+  "_enabled_calls_comment": "Each enabled addon block carries enabled_calls[] — the catalog IDs (e.g. ADO.1, GIT.2, M365.3) currently active for this user. Seeded from each addon's 'Defaults' section in addons/<name>.md during barista onboarding; thereafter the profile is authoritative. The user toggles individual calls via /cafe barista.",
+  "_version_comment": "version 3 dropped the legacy 'role' field; a v2 profile on disk is silently migrated (role removed, version bumped) by the barista on first encounter.",
+
+  "version": 3,
+
+  "identity": {
+    "_addressing_comment": "preferred_name = how the brief addresses you (header, glykos greeting, nudges). Defaults to first token of git.name when set by the barista. vocative = optional Greek vocative form ('Πάβλο') — Sofia uses it only when explicitly set; null means address in plain English.",
+    "git": { "email": "", "name": "" },
+    "ado": { "email": "", "displayName": "" },
+    "preferred_name": "",
+    "vocative": null
+  },
+
+  "preferences": {
+    "sweetness": "metrios",
+    "default_extras": [],
+    "budget_ms": 5000
+  },
+
+  "ado": {
+    "org": "",
+    "projects": [],
+    "enabled_calls": ["ADO.1", "ADO.2", "ADO.3", "ADO.4", "ADO.12"]
+  },
+
+  "git": {
+    "repos": [],
+    "enabled_calls": ["GIT.1", "GIT.2", "GIT.3", "GIT.4"]
+  }
+}

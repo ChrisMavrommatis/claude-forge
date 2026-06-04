@@ -1,0 +1,25 @@
+{
+  "_comment": "Template for ~/.claude/skills/cafe/state.json. Created fresh on the first run. Updated at the end of every brief. Profile is config (rare writes); state is runtime (every run).",
+
+  "version": 1,
+
+  "last_run": null,
+
+  "streak": 0,
+
+  "last_pick": null,
+
+  "lifetime": {
+    "cups_brewed": 0,
+    "prs_merged": 0,
+    "prs_reviewed": 0,
+    "since": null
+  },
+
+  "detected_patterns": [],
+
+  "barista_notes": {
+    "last_nudge": null,
+    "nudges_today": 0
+  }
+}
