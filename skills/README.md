@@ -7,8 +7,9 @@ any supporting assets (personas, templates, etc).
 
 | Skill                         | What it does                                       |
 | ----------------------------- | -------------------------------------------------- |
-| [cafe](cafe/)                 | Morning brief, ordered like coffee — what changed, who needs you, what to pick up first. Personal-use; clone and customize. |
-| [panel-review](panel-review/) | Multi-persona review of a change before PR.        |
+| [cafe](cafe/)                   | Morning brief, ordered like coffee.                   |
+| [panel-review](panel-review/)   | Multi-persona review of a change before PR.           |
+| [ticket-triage](ticket-triage/) | Gated triage of a ticket — find the problem first.    |
 
 ## Adding a skill
 
