@@ -43,17 +43,17 @@ the size:
 
 ## How it behaves
 
-- **Adaptive depth.** High-level first, fast. Then you say "go deeper on the import choice"
-  or "where does validation connect?" and it drills into just that lens.
-- **Honest sizing.** Never a bare size. Confidence is tied to open unknowns and unsettled
-  choices — a live build-vs-reuse choice alone holds it at Low. Closing an unknown visibly
-  moves the size.
+- **Guided, one part at a time.** It lists the parts of the feature, then walks them with you
+  one by one. For each part you decide the approach, tell it your plan, or ask it to explore —
+  then move to the next.
+- **Honest sizing.** Never a bare size. Confidence is set by how the parts were settled — a
+  part left high-level or resting on a guess holds the size down. Settling a part moves it.
 - **Known vs. assumed, kept apart.** Every detail that drives the approach or the size
   carries a source tag (`#code`, `#pattern`, `#user`, `#request`, `#assumption`). A size
   resting on assumptions is flagged as such.
-- **Reads code only when it pays.** Reasons from the request by default; offers to check the
-  codebase when a choice or the size depends on something only the code can answer — one
-  focused check, then back to you. Read-only throughout; it never edits.
+- **Explores through a separate agent, only when asked.** When you pick Explore on a part, it
+  sends a separate agent to investigate one focused question and report back; you decide.
+  Read-only throughout; it never edits.
 
 ## Use it
 

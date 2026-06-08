@@ -40,9 +40,10 @@
 
 ## Build — detail
 
-<fuller breakdown of each part when drilled into: what it involves, where it connects, and
-for each choice the options, their tradeoffs, and the reasoning behind the pick. High-level
-names live in the status block above.>
+<fuller breakdown of each part: what it involves, where it connects, and for each choice the
+options, their tradeoffs, and the reasoning behind the pick. Note how each part was settled —
+a decision, the user's stated approach, or a finding from exploration. High-level names live
+in the status block above.>
 
 ## Unknowns — detail
 

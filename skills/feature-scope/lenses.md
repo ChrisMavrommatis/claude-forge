@@ -1,14 +1,16 @@
 # The lenses
 
-These are six lenses on one feature, not a fixed sequence. The first pass fills them at a
-**high level**, fast. After that the user sets the depth, one lens at a time.
+These are six lenses on one feature. They are the **record** — the guided walk (SKILL.md →
+"The guided walk") fills them as the user settles each part. The parts are the steps you
+walk; the lenses are how the scope is written down.
 
 They all rest on **following the feature through the system** (see SKILL.md → "The main
 technique"): walk where the data comes in, where it is used, what existing thing could
 carry it, what would change, what breaks. Each thing you hit is a part to build (→ Build),
-a choice (→ Build, as options + tradeoffs), or a decision (→ Unknowns, then Decided).
+a choice (→ Build, as options + tradeoffs), or a decision (→ Unknowns, then Decided). The
+parts you find are the steps the user walks.
 
-For each lens: what to do, what not to do, and how deep to go (and when to check code).
+For each lens: what to do, what not to do, and how it fills during the walk.
 
 ---
 
@@ -54,10 +56,18 @@ Don't invent parts the request doesn't imply. Don't merge two genuinely differen
 one to make it look smaller. **Don't quietly pick a side at a choice** — show the options,
 recommend, let the user decide.
 
-**Depth (high-level):** name the parts and the obvious choices; one line each.
-**Depth (drill-in):** when asked to break a part down or weigh a choice, expand *that* one —
-and this is usually where you **offer to check code**: *"to judge reuse-vs-custom I'd check
-how the existing import handles deletes — want me to?"* One check, then report.
+**The parts are the steps.** Naming the parts (and their choices) is the setup; settling them
+one at a time is the walk.
+
+**Settling a part — three ways.** For each part, show it (and its choice, if any), then ask
+how the user wants to settle it:
+- **Decide** — the user picks the approach, or confirms the recommended pick.
+- **Tell me your approach** — the user says how they plan to build it; record it.
+- **Explore** — send a separate agent one focused question (for example, "does the existing
+  import remove stale rows?"), it reports back, then the user decides.
+
+Record the result and move to the next part. Don't size until every part is settled or
+explicitly left high-level.
 
 ---
 
@@ -70,7 +80,7 @@ skill: the unknowns are what someone forgets when they call it "small". Three ki
 - **Spec unknowns** — the request doesn't say (which countries? what happens on failure?).
   Close by **asking the user**.
 - **Code unknowns** — the answer is in the codebase (is there a validation hook? how many
-  entry paths?). Close by **offering a code check**.
+  entry paths?). Close by **sending a separate explore agent** (the Explore option).
 - **Decision unknowns** — a choice the feature forces but nobody raised (saved addresses at
   checkout — do we block invalid ones?). Found by following the feature. Close by **deciding**
   (with the user) → moves to ☑️ Decided.
@@ -111,23 +121,23 @@ it would hurt.
 **Don't:** treat every theoretical risk as a disaster. Don't bury a real risk among
 boilerplate ones. A risk with no plausible trigger isn't a risk — drop it.
 
-**Depth:** high-level names the risk; drill-in judges likelihood and impact and may check
-code (offer first).
+**Depth:** name the risk when it surfaces; judge likelihood and impact when the relevant part
+is settled. Confirming a risk in code is an Explore question, only when the user asks.
 
 ---
 
 ## 📏 Size
 
 **Do:** Give the T-shirt size, the confidence, the one-line *why*, and the lever — what
-would move it. Confidence is set by open unknowns and unsettled choices: a live
-build-vs-reuse choice alone can hold a size at Low. See the rubric tables in SKILL.md.
+would move it. Confidence is set by how the parts were settled: a part left high-level or
+resting on a guess holds the size down. See the rubric tables in SKILL.md.
 
 **Don't:** ever give a bare size. Don't present a Low-confidence size as settled. Don't pad
 against unknowns quietly, and don't lowball to please. If it is **L**, say it isn't small
 and point to splitting or a full build-planning effort.
 
-**Depth:** the size is always present from the first pass (even if Low confidence). It
-*sharpens* as unknowns close and choices settle — it is what the whole skill moves.
+**When:** the size comes at the end of the walk, once the parts are settled. You can show a
+running size earlier, but it is a guess until the parts are settled — say so.
 
 ---
 

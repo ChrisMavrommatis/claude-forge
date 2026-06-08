@@ -1,6 +1,6 @@
 ---
 name: feature-scope
-description: Scope and size a small feature before you build it. Work out what to build, how to build it (which approach, where it connects), what is unknown, what could go wrong, and how big it is. The build-vs-reuse choices are shown as options with tradeoffs and a recommended pick. Adaptive depth — high-level first, drill into any part on request. Read-only; reads the codebase only when a choice or the size depends on it. Use when someone asks for a small feature and you need to understand the work before quoting or planning. Examples — `/feature-scope`, `/feature-scope <name>` to resume.
+description: Scope and size a small feature before you build it. It guides you through the feature one part at a time — for each part you decide the approach, tell the skill how you plan to build it, or have it send a separate agent to explore the code, then you decide. Build-vs-reuse choices are shown as options with tradeoffs and a recommended pick. Once every part is settled, it gives a size and a confidence. Read-only; explores the codebase only when you ask. Use when someone asks for a small feature and you need to understand the work before quoting or planning. Examples — `/feature-scope`, `/feature-scope <name>` to resume.
 ---
 
 # Feature Scope
@@ -37,27 +37,33 @@ By the end of a scope you have answers to all five:
 
 ### Procedure — the steps it follows
 
+The skill guides you through the feature one part at a time. It leads; you decide at each
+part.
+
 1. **Name it.** Restate the request in one sentence. Agree on a name, create the scope file.
-2. **First pass, high level.** Follow the feature through the system — where data comes in,
-   where it is used, what it touches. From that, fill in the parts to build and the
-   choices, the unknowns, the risks, and a first size (usually Low confidence, which is
-   normal).
-3. **Drill where it matters.** You point at what to look into; the skill expands that part
-   only. If the answer is in the code, it asks first, checks one thing, and reports back.
-4. **Close unknowns, make the choices.** Each question gets answered, by you or by a code
-   check. Each answer is recorded and raises the size confidence. This is the main loop:
-   open question, answer, confidence goes up.
-5. **Give the size.** When the unknowns are closed and the choices made, give the final
-   size, confidence, and the reason. If it turns out big (L), say so and suggest splitting.
+2. **Pin the ask.** Agree the one-line ask before going further.
+3. **List the parts.** Follow the feature through the system to break it into the parts that
+   each need an implementation decision. Show the list and confirm it. These parts are the
+   steps you will walk.
+4. **Walk each part.** Go through the parts one at a time. For each, show the part and any
+   reuse-vs-build choice, then ask how to settle it. There are three ways:
+   - **Decide** — you pick the approach, or confirm the recommended pick.
+   - **Tell me your approach** — you say how you plan to build it; the skill records it.
+   - **Explore** — the skill sends a separate agent to investigate one question, reports the
+     findings back, and you decide.
+   Record the result, then move to the next part. Don't jump ahead.
+5. **Size it.** When every part is settled, give the size, confidence, and the reason. A part
+   settled by a decision or by exploration raises confidence; a part left high-level or
+   assumed lowers it. If it is big (L), say so and suggest splitting.
 6. **Hand off.** Offer to pass the scope to a build plan, or you quote it or shelve it. Your
    call.
 
 Three rules run through all of it: keep what is known separate from what is guessed (every
 known is tagged with where it came from); never pick a side at a choice on your own (show
-the options, recommend one, you decide); and confidence only goes up by closing unknowns,
+the options, recommend one, you decide); and confidence only goes up by settling parts,
 never by claiming it.
 
-The rest of this file is the detail behind these steps — the lenses, the depth rules, the
+The rest of this file is the detail behind these steps — the lenses, the guided walk, the
 guardrails, and the sizing table.
 
 ## When to use
@@ -87,8 +93,9 @@ guardrails, and the sizing table.
 
 ## The lenses
 
-A scope looks at the feature through six lenses. The first pass fills them at a high level.
-You then drill into whichever one matters.
+A scope looks at the feature through six lenses. They are the record — the guided walk fills
+them as you settle each part. They are not the steps you walk (the parts are); they are how
+the scope is written down.
 
 | Lens | Icon | The question it answers |
 |------|------|-------------------------|
@@ -121,7 +128,8 @@ The zipcode example, followed through:
 - *Checkout has saved addresses* → a **decision** comes up: do we block an invalid saved
   one? Nobody asked it; following the feature found it.
 
-That walk — choice, touch point, decision — is how the skill produces its scope.
+That walk — choice, touch point, decision — is how the skill finds the parts. Each part it
+finds becomes a step you walk in the guided walk below.
 
 ## What "how" means here
 
@@ -130,19 +138,38 @@ service, an attribute), and **where it connects**. It is **not** file-by-file wo
 order, or code. That detailed build plan is a separate step that comes after this. This
 skill stops at the approach and the size.
 
-## Adaptive depth
+## The guided walk
 
-1. **First pass is high level.** Fill the lenses with the broad picture — the parts, the
-   obvious choices, the touch points, a first size. Don't read code yet. Get the shape down
-   fast.
-2. **Then you set the depth.** "Go deeper on the import choice", "where does validation
-   connect?", "how risky is the saved-address change?" — expand that lens, and only that
-   one.
-3. **Drilling may need code — ask first.** When going deeper needs a fact only the code can
-   give ("is there already a validation hook on submit?"), ask to check, check one thing,
-   then report. Don't go off and read for a long time on your own.
-4. **Depth raises confidence.** Every unknown closed and every choice made should move the
-   Size confidence. Say so: "confirmed the submit hook exists #code → Size now S / High."
+This is how the skill runs. It leads; the user settles each part.
+
+1. **Setup.** Pin the one-line ask. Then follow the feature through the system and list the
+   parts that each need an implementation decision. Show the list and confirm it. Don't read
+   code in depth here — just enough to name the parts.
+2. **Walk one part at a time.** For each part in turn:
+   - Show the part. If there is a reuse-vs-build choice, show the options with tradeoffs and
+     a recommended pick.
+   - Ask how the user wants to settle it. Offer three ways:
+     - **Decide** — the user picks the approach, or confirms the recommended pick.
+     - **Tell me your approach** — the user says how they plan to build it; record it.
+     - **Explore** — send a separate agent to investigate one question (for example, "does an
+       import that removes stale rows already exist?"). It reports back. Then the user
+       decides.
+   - Record the result in Build and Decided. Note any new unknown or risk it surfaced.
+   - Move to the next part. Don't jump ahead.
+3. **Depth is per part.** A part can be settled high-level (a quick decision) or in detail
+   (after exploring). The user chooses per part. You don't have to treat every part the same.
+4. **Size at the end.** Once every part is settled, size the whole feature. How each part was
+   settled sets the confidence (see The size).
+
+### Exploration uses a separate agent
+
+- When the user picks **Explore**, dispatch a separate agent to do the discovery and report
+  back. Don't read through the codebase in your own context.
+- Give the agent one focused question. It reads code, returns what it found with sources, and
+  flags what it could not determine.
+- If the project ships a dedicated exploration agent, use it; otherwise use a general
+  exploration agent. Stay read-only.
+- Bring the findings to the user and let them decide. The skill does not decide for them.
 
 ## Guardrails
 
@@ -169,12 +196,13 @@ These come before the urge to sound confident. Follow them.
    against what you don't know.
 6. **When unsure, ask or write it down — don't invent.** A gap is a 🕳️ Unknown or a tagged
    `#assumption`, never a silent blank that quietly grows or shrinks the size.
-7. **Don't read code without asking.** You may offer to check ("want me to confirm X?"), but
-   don't go into the repo on your own. The user sets the depth.
-8. **One check, then report.** When the user agrees to a code check, do one focused check
-   (read the file, search the pattern) and come back — not a long dig.
-9. **Read-only.** This skill never edits code. It reads code and patterns to back up the
-   scope and writes only to `.plans`. Building comes later, not here.
+7. **Walk one part at a time. Don't jump ahead.** Settle the current part before moving on.
+   Don't size the feature until every part is settled or explicitly left high-level.
+8. **Explore only when the user asks, through a separate agent.** Don't read the codebase in
+   your own context. When the user picks Explore, send a separate agent with one focused
+   question; it reports back; the user decides.
+9. **Read-only.** This skill never edits code. It reads code and patterns (through the explore
+   agent) to back up the scope and writes only to `.plans`. Building comes later, not here.
 
 ## Knowns and guesses — source tags
 
@@ -231,7 +259,10 @@ This block is the at-a-glance view; it is the same thing you re-print on resume.
 
 - **📍 line** — the skill and the scope name.
 - **🎯 / 🧩 / ⚠️** — knowns carry source tags; choices show options, tradeoff, and pick.
-- **🕳️ lines** — questions; these and open choices drive confidence.
+- **🧩 Build** — each part shows how it was settled: a decided pick, the user's stated
+  approach, or a finding from exploration. A part not yet reached stays an open choice or a
+  `#assumption`.
+- **🕳️ lines** — questions; these and unsettled parts drive confidence.
 - **☑️ Decided** — choices and decisions once made, kept short.
 - **📏 Size** — size, confidence, the one-line reason, and what would move it.
 
@@ -246,16 +277,16 @@ This block is the at-a-glance view; it is the same thing you re-print on resume.
 | **M**  | several parts, a reuse-vs-build choice, or new data; real unknowns remain |
 | **L**  | spans many areas with real unknowns — **probably not actually small** |
 
-**Confidence** is how much to trust the size, set by open unknowns and unmade choices:
+**Confidence** is how much to trust the size, set by how the parts were settled:
 
 | Confidence | When |
 |------------|------|
-| **High**   | unknowns closed, choices made; backed by `#code` / `#user` / `#pattern` |
-| **Medium** | the shape is clear but some unknowns, choices, or `#assumption`s remain |
-| **Low**    | many unknowns or an open choice; the size is a guess — **answer before quoting** |
+| **High**   | every part settled by a decision or exploration; backed by `#code` / `#user` / `#pattern` |
+| **Medium** | most parts settled, but some left high-level or resting on an `#assumption` |
+| **Low**    | parts still open, or settled only by guesses; the size is a guess — **settle them before quoting** |
 
-**If the first pass lands XS at High confidence with no open unknowns or choices**, say so
-and offer to go straight to building or quoting instead of drilling further.
+**If, once the parts are listed, the feature is clearly XS with nothing to settle**, say so
+and offer to go straight to building or quoting instead of walking each part.
 
 **If it is L**, say so plainly: "this is not small — consider splitting it into separate
 features, or take it into a full build plan." Don't scope a large thing as if it were small.
@@ -302,9 +333,12 @@ The user may also quote it, defer it, or drop the feature.
 ## Constraints
 
 - **Plain language always.** Short, clear sentences. No flourish. Less is more.
-- **Read-only.** Reads code and patterns to back up the scope; writes only to `.plans`.
-  Never edits.
-- **High level first, depth on request.** Don't go exhaustive on the first pass.
+- **Read-only.** Reads code and patterns (through the explore agent) to back up the scope;
+  writes only to `.plans`. Never edits.
+- **Guided, one part at a time.** The user settles each part — by deciding, stating an
+  approach, or asking to explore — before the size. Don't jump ahead.
+- **Explore through a separate agent, only when asked.** Don't read the codebase in your own
+  context.
 - **"How" is the approach**, never file-by-file work.
 - **Honest sizing.** Never a bare size; always size, confidence, reason, and the lever.
 - **Choices get options, tradeoffs, and a pick** — recommend, don't decide for the user.
