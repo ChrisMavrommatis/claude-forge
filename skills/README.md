@@ -8,6 +8,7 @@ any supporting assets (personas, templates, etc).
 | Skill                         | What it does                                       |
 | ----------------------------- | -------------------------------------------------- |
 | [cafe](cafe/)                   | Morning brief, ordered like coffee.                   |
+| [feature-scope](feature-scope/) | Map out & size a small feature before the build plan. |
 | [panel-review](panel-review/)   | Multi-persona review of a change before PR.           |
 | [ticket-triage](ticket-triage/) | Gated triage of a ticket — find the problem first.    |
 
