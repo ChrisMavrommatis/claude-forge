@@ -1,7 +1,7 @@
 # ticket-triage
 
-A ticket comes in. Instead of letting Claude race to a solution — inventing,
-hallucinating, assuming — this skill walks a fixed path and holds the order:
+A ticket comes in. Instead of letting Claude jump to a solution — inventing,
+hallucinating, assuming — this skill works through it in a fixed order:
 
 1. **RAW** — the ticket's words, untouched.
 2. **MEANING** — what it could mean (a lens, not a conclusion).
@@ -9,10 +9,10 @@ hallucinating, assuming — this skill walks a fixed path and holds the order:
 4. **EXPLAIN** — why it happens, as far as the evidence goes.
 5. **SOLUTIONS** — options + tradeoffs, only on your explicit go.
 
-Claude asks before each step and never jumps to solutions on its own. Facts and
-guesses are kept strictly apart — every fact carries a source tag (`#code`, `#system`,
-`#log`, `#data`, `#user`, `#ticket`), and a guess stays a guess until a source proves
-it or you confirm it.
+Claude asks before each step and never jumps to solutions on its own. Facts and guesses
+are kept separate — every fact carries a source tag (`#code`, `#system`, `#log`,
+`#data`, `#user`, `#ticket`), and a guess stays a guess until a source proves it or you
+confirm it.
 
 It works read-only — reading code, system, and logs to gather evidence, writing only to
 `.plans` — until you explicitly say "now fix that".
@@ -24,7 +24,7 @@ It works read-only — reading code, system, and logs to gather evidence, writin
 /ticket-triage <name>     # resume an existing ticket from .plans/
 ```
 
-It also tends to auto-fire when you say "I have this ticket". The slash command is the
+It also tends to start when you say "I have this ticket". The slash command is the
 reliable trigger.
 
 ## The record
@@ -35,5 +35,5 @@ plus one ordered file per finding (`1-…`, `2-…`). Promotion is always your c
 
 ## Not this skill
 
-When there's no clear solution or the problem is multi-layered and needs debug
+When there's no clear solution, or the problem is multi-layered and needs debug
 instrumentation to uncover — that's a separate (future) discovery skill.

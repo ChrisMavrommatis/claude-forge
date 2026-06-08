@@ -9,7 +9,7 @@ description: Multi-persona review of a change — Dev, Tech Lead, QA, PM, Client
 
 ## What this is for
 
-Dispatches multiple persona-tailored review agents in parallel and consolidates their findings. The strongest signal is **convergence** — something flagged by 2+ personas is almost always real. **Unique signals** (one persona catching something nobody else saw) come second.
+Dispatches multiple persona-tailored review agents in parallel and consolidates their findings. The strongest signal is **convergence** — something flagged by 2+ personas is almost always real. **Unique signals** (one persona catching something nobody else saw) rank second.
 
 ## When to use
 
@@ -34,7 +34,7 @@ Dispatches multiple persona-tailored review agents in parallel and consolidates 
 - `--details` - skip the iteration prompt at the end of the summary; print all per-persona cards immediately.
 - `--explain <persona>` - drill into a single persona for deeper analysis. Full spec in [details.md](details.md); typically run after a panel review.
 - `--accept-veto="<reason>"` - non-interactive acknowledgment of all panel vetos with a single reason. No-op if no veto fires. Full flow in [veto.md](veto.md); only relevant when a veto-eligible persona is in the panel.
-- `--model=<sonnet|opus|haiku>` - which model the personas run on. Default: `sonnet`. Use `opus` for high-stakes pre-PR passes where catch-rate matters more than cost. `haiku` is accepted but advised against - it tends to miss the subtler convergent issues that are the point of multi-lens review.
+- `--model=<sonnet|opus|haiku>` - which model the personas run on. Default: `sonnet`. Use `opus` for high-stakes pre-PR passes where catch-rate matters more than cost. `haiku` is accepted but advised against - it tends to miss the subtler convergent issues that multi-lens review exists to catch.
 - `--force` - bypass the size-guard warning and refusal. See [Size guard](#size-guard); use sparingly.
 
 **Target** — what to review:
@@ -81,7 +81,7 @@ See [templates/persona.md](templates/persona.md) for the file shape, frontmatter
 3. **Resolve personas.** If `--personas=...` is set, intersect the requested list with what's in `personas/`. Fail clearly if a requested persona has no file. Otherwise use the default panel.
 4. **Check target size.** Count files and changed lines per [Size guard](#size-guard). Above the warn threshold → prompt for confirmation; abort if the user declines. Above the refuse threshold → exit unless `--force` was passed.
 5. **Dispatch in parallel.** One Agent call per persona, all in a single message. Use the `general-purpose` subagent on the configured model (`--model` flag; defaults to Sonnet, or Opus on `--explain`). Each persona gets its `personas/<name>.md` file injected verbatim, plus the resolved target (the diff or files under review) and the mandatory output format.
-6. **Wait for all to return.** All are read-only; none will modify files. If any persona's dispatch errors (rate limit, timeout, refusal, network failure), capture the error message and mark that persona as FAILED for this run. Continue with the personas that succeeded — one failure doesn't kill the review. Read [failure.md](failure.md) only when at least one persona failed, for the rendering rules.
+6. **Wait for all to return.** All are read-only; none will modify files. If any persona's dispatch errors (rate limit, timeout, refusal, network failure), capture the error message and mark that persona as FAILED for this run. Continue with the personas that succeeded — one failure does not stop the review. Read [failure.md](failure.md) only when at least one persona failed, for the rendering rules.
 7. **Consolidate.** If **every** persona failed, abort per the all-failed message in [failure.md](failure.md) — no verdict, exit. Otherwise compare findings across the personas that returned successfully (failed personas are skipped entirely — they don't contribute to convergence or to the verdict tally). Match by root cause + file/line (not wording). Filter each persona's "Unique findings" to drop anything already in the TOP block. Compute the verdict in order, stop at first match:
    - Start at **SHIP**.
    - Bump to **HOLD** if any persona said REJECT, or 2+ said HOLD.
@@ -92,7 +92,7 @@ See [templates/persona.md](templates/persona.md) for the file shape, frontmatter
 
 ## Size guard
 
-Before dispatching personas, count the target's size. Very large changes produce noisy reviews (the LLM loses focus across hundreds of files) and burn time and tokens with diminishing returns.
+Before dispatching personas, count the target's size. Very large changes produce noisy reviews — the model can't hold hundreds of files in focus — and cost time and tokens for little extra value.
 
 ### Thresholds
 
@@ -403,7 +403,7 @@ Read a template only when its block is about to render — they're not load-on-s
 
 ## Constraints
 
-- **Plain language always.** Every persona writes findings in clear, jargon-free English. If a domain term is genuinely needed, define it inline. The reader might be a PM, a client, or a junior dev — the report should make sense without specialist knowledge.
+- **Plain language always.** Every persona writes findings in clear, jargon-free English. If a domain term is needed, define it inline. The reader might be a PM, a client, or a junior dev — the report should make sense without specialist knowledge. This covers the whole produced report: the persona text fields and the report's own headings and labels stay plain, even though findings come from distinct personas.
 
   Bad: "CSRF token validation missing."
   Good: "no protection against request forgery — an attacker could submit forms on someone else's behalf."

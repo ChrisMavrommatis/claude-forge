@@ -11,7 +11,7 @@ Three kinds of template, all in this folder:
 
 - [`brief.md`](brief.md) — brief layout. Section icons, voice rules, pick-of-day priority, slot syntax (`{{name}}`), sweetness transforms (sketos / metrios / glykos), `me-gala` expansion rule.
 
-Reshaping the brief means editing this file. Adding a wholly different brief flavour means forking it.
+Reshaping the brief means editing this file. A completely different brief means forking it.
 
 ## Authoring — copied when developing a new addon
 

@@ -27,9 +27,9 @@ lines) but below refuse.
   Lines changed:   8,402   (warn at >5,000)
   Personas:        5       (would dispatch 5 sonnet agents)
 
-  Large changes produce noisy reviews — the LLM loses focus across
-  hundreds of files. Consider splitting by directory or sub-feature
-  for a sharper result.
+  Large changes produce noisy reviews — the model can't keep
+  hundreds of files in focus. Consider splitting by directory or
+  sub-feature for a sharper result.
 
   Proceed? (yes / no — or rerun with --force to skip this prompt)
 ```
@@ -52,17 +52,17 @@ lines).
   Files changed:   612     (refuse at >500)
   Lines changed:   24,118  (refuse at >20,000)
 
-  At this size the LLM can't keep enough context in focus to give
+  At this size the model can't keep enough context in focus to give
   a useful review — convergence detection breaks down, and the
   result is mostly noise.
 
-  Split the review, or rerun with --force if you really mean it.
+  Split the review, or rerun with --force to override.
 ```
 
 **Differences from `warn`:**
 - Heading word changes from `LARGE CHANGE — confirm` to
-  `REFUSED — too large`. Semantic shift from "I'd rather not" to
-  "I won't".
+  `REFUSED — too large`. The warn variant asks; the refuse variant
+  declines.
 - **No `Personas:` line** in the stat block — no dispatch to forecast.
 - **No `Proceed?` prompt.** Exit immediately. User's only paths are
   out-of-band: split the diff, or rerun with `--force`.
@@ -92,9 +92,8 @@ The orchestrator counts size before dispatch:
 ## `--force` flag
 
 `--force` bypasses both warn and refuse. Use sparingly — meant for
-CI / scripted invocations where the user has already accepted the
-cost of a noisy review, or for genuinely-needed reviews on
-ostensibly-huge diffs.
+CI or scripted runs where the user has already accepted a noisy
+review, or for reviews that are genuinely needed on a very large diff.
 
 ## Used by
 

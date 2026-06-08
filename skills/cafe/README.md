@@ -1,10 +1,10 @@
 # cafe
 
-A personal morning-brief skill for Claude Code. You sit down with a coffee, you've been away a few days — what do you need to know before you start typing?
+A personal morning-brief skill for Claude Code. You've been away a few days and want to know the state of your projects before you start work.
 
 One screen. Plain English. Read-only.
 
-> **This skill is mine** — built around the way *I* like to start the morning. It ships fully working, but it's framed so anyone can adopt it and bend it to their own setup. The barista (her name is Sofia) takes your order on first run; everything she asks about is configurable. See **Make it yours** at the bottom.
+> **This skill is personal** — built around how the author starts the morning. It ships fully working, but anyone can adopt it and adapt it to their own setup. The barista (her name is Sofia) takes your order on first run; everything she asks about is configurable. See **Make it yours** at the bottom.
 
 ## Quick start
 
@@ -38,12 +38,12 @@ Section vocabulary, voice, and pick-of-day priority all live in [`templates/brie
 
 ## Design principles
 
-1. **One screen.** A printout, not a dashboard.
-2. **Presence-based.** Sections drop if they have nothing to say.
-3. **Plain English.** Reads like a colleague telling you over coffee.
+1. **One screen.** A short printout, not a dashboard.
+2. **Presence-based.** Sections drop when they have nothing to show.
+3. **Plain English.** Short, clear sentences.
 4. **Read-only.** Never commits, pushes, comments, schedules.
 5. **Quiet on failure.** ADO times out → git-only brief. No prompts unless required.
-6. **Personalised.** The barista takes your order; the brief is for *you*.
+6. **Personalised.** The barista takes your order; the brief is for you.
 
 ## Addons
 
@@ -92,7 +92,7 @@ After first run, the skill writes its profile and state to `~/.claude/skills/caf
 
 ## Make it yours
 
-This skill is shipped as a working personal config — the author's barista (Sofia) speaks with Greek vocatives, the coffee metaphor is throughout, and the sweetness levels are `sketos / metrios / glykos`. None of that is load-bearing; it's just a voice. Edit freely.
+This skill is shipped as a working personal config — the author's barista (Sofia) speaks with Greek vocatives, the coffee metaphor runs throughout, and the sweetness levels are `sketos / metrios / glykos`. None of that is required; it's just the voice. Edit freely.
 
 The lowest-friction customizations:
 

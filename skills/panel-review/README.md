@@ -60,9 +60,9 @@ The summary screen on a typical HOLD:
     - "no"         — done
 ```
 
-Three glyphs do the heavy lifting in the TOP block: `[` opens a new
-issue, `*` names the personas, `·` points at a file:line, `>` carries
-a code excerpt or fix note.
+Four glyphs carry the TOP block: `[` opens a new issue, `*` names the
+personas, `·` points at a file:line, `>` carries a code excerpt or fix
+note.
 
 ## What you get
 

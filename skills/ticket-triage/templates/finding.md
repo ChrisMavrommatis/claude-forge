@@ -24,4 +24,4 @@
 ## Detail
 
 <fuller prose for this finding: what it is, the evidence behind it, where the
-explanation runs out. Flushed on request — the Status block stays current regardless.>
+explanation runs out. Saved on request — the Status block stays current regardless.>

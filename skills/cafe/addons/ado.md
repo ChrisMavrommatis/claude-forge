@@ -49,7 +49,7 @@ Placeholders:
 | ID     | What it does                                                              | When it matters                                                              | Default | Size |
 | ------ | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------- | ---- |
 | ADO.1  | PRs assigned to you for review, that you haven't voted on                 | Someone is blocked waiting for your approval                                 | ✅      | XS   |
-| ADO.2  | Your own PRs that have new unresolved comments                            | Reviewer pinged you back; ball is in your court                              | ✅      | M    |
+| ADO.2  | Your own PRs that have new unresolved comments                            | A reviewer replied; it's your turn to act                                    | ✅      | M    |
 | ADO.3  | Work items assigned to you, in active states                              | Your to-do list across all projects                                          | ✅      | XS   |
 | ADO.4  | Latest build on `main` and your current branch — only renders when red    | "I broke main" / "my branch is failing CI"                                   | ✅      | S    |
 | ADO.5  | Recent commits on `main` via the ADO API                                  | Only useful for repos you don't have cloned locally                          | ⛔      | S    |
@@ -406,7 +406,7 @@ When this addon is enabled, these catalog calls come on automatically. Toggle in
 | ID     | Call                                     | Why default                                                  |
 | ------ | ---------------------------------------- | ------------------------------------------------------------ |
 | ADO.1  | PRs awaiting my review                   | Someone's blocked on me — unblock first.                     |
-| ADO.2  | My PRs with new comments                 | Stale review = dead PR. Moderate cost justified by signal.   |
+| ADO.2  | My PRs with new comments                 | A stale review blocks the merge. Moderate cost, worth it.    |
 | ADO.3  | Work items assigned to me                | What I'm supposed to be doing today.                         |
 | ADO.4  | Red builds on main / current branch      | Unblock self before anything else.                           |
 | ADO.12 | ADO connectivity healthcheck             | Failure must be visible. Always on.                          |

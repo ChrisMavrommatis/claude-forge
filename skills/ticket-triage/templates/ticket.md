@@ -1,7 +1,7 @@
 # <descriptive title — what the problem is, not a ticket code>
 
 > ticket-triage record. The status block is the at-a-glance view; everything below it
-> is the full record. Claims and evidence are written live; prose is flushed on request.
+> is the full record. Claims and evidence are written live; prose is saved on request.
 
 ## Status
 
@@ -31,5 +31,5 @@
 
 ## Notes
 
-<fuller prose: narrative, evidence detail, reasoning. Flushed on pause / exit / on
+<fuller prose: narrative, evidence detail, reasoning. Saved on pause / exit / on
 request — not every keystroke. The Status block above stays current regardless.>

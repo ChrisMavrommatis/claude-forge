@@ -4,7 +4,7 @@ One file per data-source / integration. Each addon owns its own top-level block 
 
 ## Shipped
 
-- [`ado.md`](ado.md) — Azure DevOps. PRs, work items, builds, iterations, releases. The brief's main backbone.
+- [`ado.md`](ado.md) — Azure DevOps. PRs, work items, builds, iterations, releases. The brief's main data source.
 - [`git.md`](git.md) — local git. Commits, branches, status, builds via repo CI. Default-on.
 - [`m365.md`](m365.md) — Microsoft 365 (`claude.ai/Microsoft 365` connector). Email surface live (M365.1–M365.6); calendar / Teams / SharePoint surfaces visible on the connector and queued as future catalog entries under this same addon.
 

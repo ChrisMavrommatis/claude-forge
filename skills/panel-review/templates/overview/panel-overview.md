@@ -7,11 +7,11 @@ separators, no fixed-width frames.
 
 ## Why a box here and only here
 
-Borders break visibly when the user's terminal or chat panel is
-narrower than the box width. The verdict is the one thing where the
-visual anchor justifies the cost — a misaligned border on a 5-line
-header is forgivable; a misaligned border around a long table is not.
-Everything else relies on indentation and a single horizontal rule.
+Borders break when the user's terminal or chat panel is narrower than
+the box width. The verdict is the one place worth the risk: a
+misaligned border on a 5-line header is tolerable; one around a long
+table is not. Everything else uses indentation and a single
+horizontal rule.
 
 ## Shape
 
@@ -31,7 +31,7 @@ Everything else relies on indentation and a single horizontal rule.
 - Two stanzas inside: identity (top two lines) and verdict
   (bottom two lines), separated by a blank line.
 - The verdict word goes right after `VERDICT:  ` on its own line —
-  no centering, no extra borders. Caps + label do the work.
+  no centering, no extra borders. Caps and the label are enough.
 
 ## Slots
 
@@ -45,8 +45,8 @@ Everything else relies on indentation and a single horizontal rule.
 | Tally line   | Count of each verdict among successful personas. Failed not counted. |
 
 Elapsed time (`<T>s`) was in the previous draft and is now dropped —
-not load-bearing, and trimming it keeps the meta line on one row at
-narrower widths. Add it back per-screen if a reviewer asks for it.
+it added nothing essential, and removing it keeps the meta line on one
+row at narrower widths. Add it back per-screen if a reviewer asks for it.
 
 ## Variants
 
@@ -54,7 +54,7 @@ narrower widths. Add it back per-screen if a reviewer asks for it.
 
 Verdict line shows `HOLD†`; tally gets `· <K> veto acknowledged`;
 footnote line(s) appear under the tally **inside** the box, so the
-verdict and its caveat travel together:
+verdict and its caveat stay in one place:
 
 ```text
 │  VERDICT:  HOLD†                                            │

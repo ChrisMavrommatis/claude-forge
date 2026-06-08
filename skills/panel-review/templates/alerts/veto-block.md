@@ -2,7 +2,7 @@
 
 The actionable gate block that appears **above** `panel-overview` on
 Screen 3 (REJECT with active veto). The only content that ever
-pre-empts the run-meta box, because the user must respond to it
+appears before the run-meta box, because the user must respond to it
 before the verdict resolves.
 
 ## Shape (single veto)

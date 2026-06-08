@@ -106,7 +106,7 @@ Empty result: detached HEAD (orchestrator surfaces a warning under the repo's se
 
 **Cost:** XS · ~50ms · per repo (parallel).
 
-Behind / ahead counts from `${repo.default_branch}` to current HEAD. The orchestrator uses **the behind count only** for rendering — that's the actionable signal ("`main` moved while you were away, you'll need a rebase"). Raw ahead count is biography, not news, and gets dropped at render time.
+Behind / ahead counts from `${repo.default_branch}` to current HEAD. The orchestrator uses **the behind count only** for rendering — that's the actionable signal ("`main` moved while you were away, you'll need a rebase"). The ahead count is dropped at render time.
 
 ```
 git rev-list --left-right --count ${repo.default_branch}...HEAD

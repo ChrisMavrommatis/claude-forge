@@ -5,9 +5,9 @@ description: Morning brief for your projects, the way you order your coffee — 
 
 # cafe — the morning brief
 
-You sit down with a coffee. You've been away a few days. What do you need to know before you start typing?
+You've been away a few days and you want to know the state of your projects before you start work.
 
-That's what this prints. One screen. Plain English. No dashboards, no jargon.
+This skill prints that. One screen. Plain English. No dashboards, no jargon.
 
 ## When to use
 
@@ -18,7 +18,7 @@ That's what this prints. One screen. Plain English. No dashboards, no jargon.
 ## When NOT to use
 
 - Mid-task. The brief is for orientation, not interruption.
-- For a thorough status report or deep dive — this is a glance, not an audit.
+- For a full status report or deep dive — this is a quick look, not an audit.
 - For unfamiliar code — use a code-exploration tool, not this.
 
 ## How to invoke
@@ -36,13 +36,13 @@ Order it like a coffee. Pick one sweetness, add any extras. Any order. Or call `
 - `metrios` (default) — medium. Plain sentences.
 - `glykos` — sweet. Friendly tone, a bit of context per item.
 
-Default sweetness comes from your `profile.preferences.sweetness`. Positional always wins for one run.
+Default sweetness comes from your `profile.preferences.sweetness`. A positional wins for one run.
 
 ### Extras — add any
 
-- `me-gala` — with milk (με γάλα). **Fullbody.** Same sections, more context per entry — reviewers, age, last comment, linked items. The sections don't change; what's inside them gets fuller.
+- `me-gala` — with milk (με γάλα). **Fullbody.** Same sections, more context per entry — reviewers, age, last comment, linked items. The sections don't change; their contents get fuller.
 
-(Room to grow — future extras drop in without changing the sweetness axis.)
+Future extras can be added without changing the sweetness axis.
 
 ## How it works
 
@@ -88,18 +88,19 @@ cafe/
 └── .skillignore            dev-facing files to leave out of installs
 ```
 
-Read addon and output files **only when needed** — when the configured addon matches their filename. Keeps SKILL.md cheap on every run.
+Read addon and output files **only when needed** — when the configured addon matches their filename. This keeps SKILL.md cheap on every run.
 
 ## What it does NOT do
 
 - It does not commit, push, or open PRs. Read-only.
 - It does not summarise code changes line-by-line.
-- It does not page anyone. Surfaces, never alerts.
+- It does not page anyone. No alerts.
 - It does not nag. The barista limits herself to one nudge per brief.
 - It does not interrupt. Tailoring nudges are appended *after* the brief renders.
 
 ## Constraints
 
+- **Plain language always.** The brief uses short, clear sentences. No flourish, no metaphor in the brief content. The coffee terms (sketos / metrios / glykos / me-gala) are the order vocabulary and stay; the brief text itself stays plain. `glykos` adds a friendly tone and one context clause per item, not embellishment.
 - **Parallel reads.** Git, ADO, file system all run in parallel.
 - **Quiet failures.** If ADO times out, render the git-only sections. Don't abort.
 - **No follow-up prompt** after the brief itself. The barista's nudge is one-line and answerable later.

@@ -10,7 +10,7 @@ Slots are written as `{{slot}}`. They're filled at render time. Omit the entire 
 
 ## Voice
 
-PR numbers, file paths, branch names, work item IDs. Technical is fine — the reader writes code.
+Plain language. Short, clear sentences in every voice. PR numbers, file paths, branch names, work item IDs are fine — the reader writes code. `glykos` adds a friendly tone and one context clause per item; it does not add flourish or metaphor.
 
 ## Pick of the day priority
 
@@ -21,7 +21,7 @@ The pick-of-day algorithm walks this list, first hit wins:
 3. PR awaiting your review with no other reviewers — someone's blocked on you.
 4. Work item marked in-progress with no recent activity — pick back up.
 5. Highest-priority work item with no in-progress alternative — start fresh.
-6. Nothing pressing — *"Nothing's on fire. Pick something from the queue when you're ready."*
+6. Nothing pressing — *"Nothing urgent. Pick something from the queue when you're ready."*
 
 ## Worked sample — the scenario
 
@@ -224,7 +224,7 @@ Reply to Yorgos on **PR #1238** — small thread, blocks merge.
   - `state.streak == 1` (or first ever run today) → `first brew`
   - `state.streak >= 2` → `{{N}}-day streak`
   - `state.streak == 0` with `state.last_run` set (gap occurred) → `back after {{days_since_last_run}} days`
-- If a streak or weather line is present (see Footer), the eye still lands on the heading first.
+- If a streak or weather line is present (see Footer), the heading still comes first.
 
 ## Yesterday's pick check (optional, top of brief)
 
@@ -315,7 +315,7 @@ Render when at least one drift signal is present. **"Drift" = something has slip
 
 ### Rebase signal (from GIT.4)
 
-Render only when `behind > 0` on the current branch — i.e. `main` moved while you were away. Drop the raw "ahead" count entirely; that's biography, not news. Hidden when `behind == 0`.
+Render only when `behind > 0` on the current branch — i.e. `main` moved while you were away. Drop the "ahead" count entirely; it's not actionable. Hidden when `behind == 0`.
 
 ```markdown
 - ⚠️ `{{current_branch}}` needs a rebase — `{{default_branch}}` moved {{N}} commits while you were away
@@ -346,7 +346,7 @@ When nothing's pressing:
 ```markdown
 ## 🎯 Pick of the day
 
-Nothing's on fire. Pick something from the queue when you're ready.
+Nothing urgent. Pick something from the queue when you're ready.
 ```
 
 ## Footer

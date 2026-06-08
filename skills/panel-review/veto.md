@@ -71,7 +71,7 @@ Acknowledged vetos move the verdict from REJECT to **HOLD†**, never to SHIP.
 
 When one or more unacknowledged vetos fire, render the veto block(s)
 **above** the `panel-overview` box — the only content that ever
-pre-empts the run-meta. The block uses the alert-section pattern
+appears before the run-meta. The block uses the alert-section pattern
 (no border, `[!]` heading + horizontal rule). Full shape spec at
 [templates/alerts/veto-block.md](templates/alerts/veto-block.md):
 
@@ -139,7 +139,7 @@ After the veto block(s), the orchestrator waits for the user's reply.
 When all vetos are acknowledged, the veto block(s) disappear from
 the top of the screen. The `panel-overview` box grows to carry the
 acknowledged-veto footnote(s) inline, so the verdict and its caveats
-travel together:
+stay in one place:
 
 ```text
 ╭─────────────────────────────────────────────────────────────╮
@@ -167,9 +167,8 @@ travel together:
 - The TOP-block marker shifts from `← veto source` to
   `← veto source (accepted)` so the status is also visible there.
 
-Box height grows by 2 lines per acknowledged veto. That's the cost
-of keeping the explanation attached to the verdict instead of
-floating below it.
+Box height grows by 2 lines per acknowledged veto. This keeps the
+explanation attached to the verdict instead of sitting below it.
 
 ## --accept-veto no-op
 

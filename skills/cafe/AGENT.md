@@ -4,7 +4,7 @@ Read this first if you're picking up this skill cold. It orients you to what thi
 
 ## What this skill is for
 
-A morning brief for your projects. The user types `/cafe` and gets a one-screen, friendly, markdown brief tailored to their projects. The brief is personalised (identity, projects, addons), addictive (icons + voice + tailoring nudges), and read-only.
+A morning brief for your projects. The user types `/cafe` and gets a one-screen markdown brief tailored to their projects. The brief is personalised (identity, projects, addons), uses icons and a consistent voice plus tailoring nudges, and is read-only.
 
 The skill orders like a coffee:
 - **Sweetness** — pick one. `sketos / metrios / glykos`. Same data, three voices.
@@ -66,19 +66,19 @@ The JSON templates give you the shape; these are the rules that aren't visible f
 
 - **Single-axis order model.** Earlier drafts had two positionals (`mode` and `sweetness`) with three modes (`quick / full / deep`). Collapsed into one axis — sweetness positional only — plus opt-in extras (currently just `me-gala`). Simpler to learn, easier to render consistently.
 - **Sweetness + extras are independent.** Sweetness is *voice* (how the brief talks). Extras are *content* (more or less per entry). They compose freely. `glykos me-gala` = sweet voice with fullbody detail.
-- **`me-gala` is fullbody, not an extra section.** Earlier draft had `me-gala` add an Environment section (Hangfire / ES / K8s). Dropped — milk in coffee changes the body, doesn't add a new ingredient. Now `me-gala` just expands each entry with reviewers, age, last comment, etc. No new sections.
-- **Roles collapsed (2026-06-04).** The skill was originally two-role (`dev` and `pm`) when it lived as a shared team tool. After it became a personal skill, roles were retired entirely — there's one brief, and anyone forking who wants a different shape edits `templates/brief.md` and the addon defaults directly. Addon defaults themselves moved inline at the same time — they used to live in per-role tables, now each `addons/<name>.md` declares its own in a Defaults section. Less abstraction, fewer indirections, same coffee.
+- **`me-gala` is fullbody, not an extra section.** Earlier draft had `me-gala` add an Environment section (Hangfire / ES / K8s). Dropped — `me-gala` changes how much detail each entry carries, it does not add a new section. Now `me-gala` just expands each entry with reviewers, age, last comment, etc. No new sections.
+- **Roles collapsed (2026-06-04).** The skill was originally two-role (`dev` and `pm`) when it lived as a shared team tool. After it became a personal skill, roles were retired entirely — there's one brief, and anyone forking who wants a different shape edits `templates/brief.md` and the addon defaults directly. Addon defaults themselves moved inline at the same time — they used to live in per-role tables, now each `addons/<name>.md` declares its own in a Defaults section. Less abstraction, fewer indirections.
 - **Profile + state are two files.** Profile is config — written by the barista, mostly read. State is runtime — written every brief (streak, last_pick, detected_patterns). Different update cadence, cleaner concerns.
-- **Lazy-load profile.** Missing profile → barista takes over and produces no brief that run. No "skip onboarding" escape. Forces real onboarding before personalisation can degrade silently.
-- **Short-as-possible first interview.** Aim for four questions or fewer. Anything else lives in later tailoring nudges. Long forms kill adoption; the barista finishes in under a minute.
+- **Lazy-load profile.** Missing profile → barista takes over and produces no brief that run. No "skip onboarding" escape. This forces real onboarding before personalisation can degrade silently.
+- **Short first interview.** Aim for four questions or fewer. Anything else lives in later tailoring nudges. Long forms reduce adoption; the barista finishes in under a minute.
 - **One nudge per brief.** The barista may append *one* tailoring line at the bottom. Never interrupts mid-brief. Rate-limited via `state.barista_notes.nudges_today`. No nag.
-- **The barista is the personalisation kickstart.** She replaces three earlier sketches (a config wizard, a silent identity-matching heuristic, and a "your area" filter). One warm conversation, not three guesses.
+- **The barista handles personalisation setup.** She replaces three earlier sketches (a config wizard, a silent identity-matching heuristic, and a "your area" filter). One conversation, not three guesses.
 - **Names everywhere are fake.** Pavlos Stratos, Eleni, Yorgos, ShopCo, LoyaltyApp, Example Corp. The skill repo may end up public; never check in real client or teammate data.
 - **No flags.** `--since`, `--section`, `--user` and friends were dropped during the rebuild. Will come back once the core is stable.
 
 ## What's complete
 
-- Three locked rules — addicting output, sweetness + extras, personalised.
+- Three locked rules — engaging output, sweetness + extras, personalised.
 - Single-axis order: `sketos / metrios / glykos` + optional `me-gala`.
 - Barista flow — first-time interview, tailoring nudges with rate limit, schema-version migration.
 - Profile + state schema, with initial templates.
@@ -92,7 +92,7 @@ The JSON templates give you the shape; these are the rules that aren't visible f
 - **Multi-org per profile.** One ADO org for now.
 - **Wrike** — investigated; see `.plans/wrike-discovery.md` for findings. Dropped from the shipped skill until a workable install path is locked in.
 - **Auto-posting to ADO / channels.** Read-only.
-- **Anniversary celebrations beyond a one-line footer note.** No confetti, no pop-ups.
+- **Anniversary celebrations beyond a one-line footer note.** Nothing more than that one line.
 
 ## Common edits — how to extend
 
@@ -111,9 +111,9 @@ The JSON templates give you the shape; these are the rules that aren't visible f
 - **Don't ask twice.** When a barista nudge gets `y` or `n`, mark `asked: true`. Only `later` keeps the entry open for another week.
 - **Don't surface "fair" mode** — it's been removed. Sweetness is always one of three.
 - **Don't bypass the lazy-load rule.** Missing profile means the barista runs. No "render a generic brief" fallback.
-- **Don't quietly degrade.** Every degraded state (ADO down, plugin missing, profile incomplete) should produce a visible note in the header. Silent empty briefs kill trust.
+- **Don't quietly degrade.** Every degraded state (ADO down, plugin missing, profile incomplete) should produce a visible note in the header. A silent empty brief looks like a bug, not a clean result.
 - **Don't auto-edit code from the skill.** Read-only is a hard constraint.
 - **Don't add a section without a section icon.** Icons are part of the brief's identity, not decoration.
 - **Don't improvise off-catalog calls.** The orchestrator and barista must only use MCP tools / git commands listed in `addons/<name>.md` catalogs. They're curated read-only and cost-annotated. Need a new capability? Add it to the catalog first (with cost), then call it. Same rule for the barista when offering opt-ins.
-- **Don't ignore the brief budget.** Every catalog entry carries a per-call ms estimate; the active set's total must fit under `profile.preferences.budget_ms`. Adding entries silently is what makes briefs go from snappy to slow.
+- **Don't ignore the brief budget.** Every catalog entry carries a per-call ms estimate; the active set's total must fit under `profile.preferences.budget_ms`. Adding entries silently is what makes briefs slow.
 - **Don't infer a vocative form.** `identity.vocative` is opt-in only via the address-flair question. `null` means plain English — Sofia must not Greek-ify `git.name` on her own (`"Chris"` → `"Χρήστο"` is ambiguous, gendered, and not the user's call to make). Greeting uses `preferred_name` plain, or `Καλημέρα!` with no name when not yet captured.

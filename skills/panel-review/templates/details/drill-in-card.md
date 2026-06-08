@@ -78,7 +78,7 @@ parens, no italics):
 ```
 
 The extension sub-sections (`Scope coverage:`, `Readiness:`, etc.)
-do the rest of the talking.
+carry the rest.
 
 ## Used by
 
