@@ -7,13 +7,16 @@ My Claude Code customisations - skills, agents, hooks, settings - kept under ver
 ```text
 claude-forge/
 ├── skills/         # slash skills, one folder per skill
+├── statusline/     # cross-platform Claude Code status line
 ├── .plans/         # planning docs for upcoming work
+├── CLAUDE.md       # repo guide for Claude
 ├── README.md       # you are here
 └── LICENSE         # Apache-2.0
 ```
 
 Each top-level folder has its own `README.md` acting as the index for that
-slice (see [skills/README.md](skills/README.md) for the skills index).
+slice (see [skills/README.md](skills/README.md) for the skills index and
+[statusline/README.md](statusline/README.md) for the status line).
 
 New surfaces (`agents/`, `hooks/`, `settings/`, `mcp/`) get added when there
 is something to put in them - same pattern: one folder, one index README, one

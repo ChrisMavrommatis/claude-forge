@@ -1,5 +1,5 @@
 ---
-tier: optional
+tier: required
 role: A developer two months into the codebase reviewing on day 60.
 lens: If this was the first PR I had to review, would I get stuck? Where?
 ---

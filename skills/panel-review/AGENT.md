@@ -4,7 +4,7 @@ Read this first if you're picking up this skill cold. It orients you to what thi
 
 ## What this skill is for
 
-Multi-persona code review. The orchestrator dispatches several role-based sub-agents (Dev, Tech Lead, QA, PM, Client, plus optional security / devops / junior / accessibility / performance) in parallel against the same diff, then consolidates their findings into one verdict (SHIP / HOLD / REJECT). The strongest signal is **convergence** — anything 2+ personas independently flag is almost certainly real. Solo `[BLOCK]`-severity findings from a specialist also surface in the summary, marked with `*`.
+Multi-persona code review. The orchestrator dispatches several role-based sub-agents (Dev, Tech Lead, QA, PM, Client, Junior, plus optional security / devops / accessibility / performance) in parallel against the same diff, then consolidates their findings into one verdict (SHIP / HOLD / REJECT). The strongest signal is **convergence** — anything 2+ personas independently flag is almost certainly real. Solo `[BLOCK]`-severity findings from a specialist also surface in the summary, marked with `*`.
 
 ## Mental model
 

@@ -90,7 +90,7 @@ produce a verdict. Render the abort section per
   [!] PANEL FAILED — no verdict possible
   ─────────────────────────────────────────────────────────────
 
-  All 5 personas errored. Nothing to compare; no convergence to
+  All 6 personas errored. Nothing to compare; no convergence to
   compute; the panel can't produce a verdict.
 
   Failures:
@@ -99,6 +99,7 @@ produce a verdict. Render the abort section per
     - QA         agent error: refused (no permission)
     - PM         agent error: network failure
     - CLIENT     agent error: rate limited
+    - JUNIOR     agent error: timeout after 60s
 
   Try again, or check connectivity / quotas / model availability.
 ```

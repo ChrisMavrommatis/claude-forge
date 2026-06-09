@@ -1,8 +1,8 @@
 # panel-review
 
 Multi-persona review of a code change. Dispatches several role-based
-review agents in parallel — Dev, Tech Lead, QA, PM, Client by default;
-Security / DevOps / Junior / Accessibility / Performance as opt-ins —
+review agents in parallel — Dev, Tech Lead, QA, PM, Client, Junior by
+default; Security / DevOps / Accessibility / Performance as opt-ins —
 and consolidates their findings into one verdict. The strongest signal
 is **convergence**: anything flagged by 2+ personas is almost always
 real.
@@ -26,10 +26,10 @@ The summary screen on a typical HOLD:
 ```text
 ╭─────────────────────────────────────────────────────────────╮
 │  PANEL REVIEW                                               │
-│  range:main..HEAD  ·  18 files  ·  5 personas               │
+│  range:main..HEAD  ·  18 files  ·  6 personas               │
 │                                                             │
 │  VERDICT:  HOLD                                             │
-│  3 SHIP  ·  2 HOLD  ·  0 REJECT                             │
+│  4 SHIP  ·  2 HOLD  ·  0 REJECT                             │
 ╰─────────────────────────────────────────────────────────────╯
 
 
@@ -40,6 +40,7 @@ The summary screen on a typical HOLD:
   QA           ▸ HOLD      need test for rounding edge first
   PM           ✓ SHIP      scope matches the ticket
   CLIENT       ✓ SHIP      end-to-end story still works
+  JUNIOR       ✓ SHIP      readable; one naming question
 
 
   TOP ISSUES — caught by 2+ personas

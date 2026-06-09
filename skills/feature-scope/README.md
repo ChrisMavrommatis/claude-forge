@@ -72,6 +72,31 @@ A scope is one flat, descriptively-named file in `.plans/` (e.g.
 record below it. When the scope is solid, the skill offers to hand the file off to a
 build-planning step as its starting brief. The handoff is always your call.
 
+## File layout
+
+```text
+feature-scope/
+├── SKILL.md            core spec — the part-by-part scoping flow
+├── lenses.md           the six lenses (Ask, Build, Unknowns, Decided, Risks, Size)
+├── templates/
+│   ├── README.md       templates overview
+│   └── scope.md        the flat scope record written to .plans/
+├── AGENT.md            orientation for an agent reading this skill cold
+└── README.md           you are here
+```
+
+## Install
+
+```bash
+# Linux / Mac
+cp -r skills/feature-scope ~/.claude/skills/
+
+# Windows (PowerShell)
+Copy-Item -Recurse skills\feature-scope $env:USERPROFILE\.claude\skills\
+```
+
+See the parent [README](../../README.md) for repo-level context.
+
 ## Not this skill
 
 - Bugs and vague complaints → `/ticket-triage`.

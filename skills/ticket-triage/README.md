@@ -33,6 +33,32 @@ A ticket starts as one flat, descriptively named file in `.plans/`. If it grows 
 findings, Claude offers to promote it to a folder — `README.md` as the master track
 plus one ordered file per finding (`1-…`, `2-…`). Promotion is always your call.
 
+## File layout
+
+```text
+ticket-triage/
+├── SKILL.md            core spec — the fixed-order triage flow
+├── steps.md            the five steps in detail (RAW → MEANING → PROBLEM → EXPLAIN → SOLUTIONS)
+├── templates/
+│   ├── README.md       templates overview
+│   ├── ticket.md       the flat ticket record written to .plans/
+│   └── finding.md      one finding file inside a promoted ticket folder
+├── AGENT.md            orientation for an agent reading this skill cold
+└── README.md           you are here
+```
+
+## Install
+
+```bash
+# Linux / Mac
+cp -r skills/ticket-triage ~/.claude/skills/
+
+# Windows (PowerShell)
+Copy-Item -Recurse skills\ticket-triage $env:USERPROFILE\.claude\skills\
+```
+
+See the parent [README](../../README.md) for repo-level context.
+
 ## Not this skill
 
 When there's no clear solution, or the problem is multi-layered and needs debug

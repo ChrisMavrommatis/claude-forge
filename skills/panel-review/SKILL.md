@@ -1,6 +1,6 @@
 ---
 name: panel-review
-description: Multi-persona review of a change — Dev, Tech Lead, QA, PM, Client by default, plus optional security / devops / junior. Surfaces issues caught by 2+ personas as the strongest signal. Read-only. Examples — `/panel-review`, `/panel-review range:main..HEAD`, `/panel-review --personas=dev,security`.
+description: Multi-persona review of a change — Dev, Tech Lead, QA, PM, Client, Junior by default, plus optional security / devops / accessibility / performance. Surfaces issues caught by 2+ personas as the strongest signal. Read-only. Examples — `/panel-review`, `/panel-review range:main..HEAD`, `/panel-review --personas=dev,security`.
 ---
 
 # Panel Review
@@ -62,9 +62,9 @@ Each persona is a markdown file in `personas/`. The skill scans the folder every
 | `personas/qa.md`              | required | Test-focused engineer owning QA sign-off                   |
 | `personas/pm.md`              | required | Project manager accountable for shipping without surprises |
 | `personas/client.md`          | required | Non-technical business stakeholder                         |
+| `personas/junior.md`          | required | Developer two months in, reviewing on day 60               |
 | `personas/security.md`        | optional | AppSec / security engineer (veto-eligible)                 |
 | `personas/devops.md`          | optional | Site reliability engineer                                  |
-| `personas/junior.md`          | optional | Developer two months in, reviewing on day 60               |
 | `personas/accessibility.md`   | optional | Accessibility engineer (a11y, keyboard, screen-reader)     |
 | `personas/performance.md`     | optional | Performance engineer (latency, throughput, resource cost)  |
 
@@ -265,10 +265,10 @@ Followed by an iteration prompt (see below).
 ```text
 ╭─────────────────────────────────────────────────────────────╮
 │  PANEL REVIEW                                               │
-│  range:main..HEAD  ·  12 files  ·  5 personas               │
+│  range:main..HEAD  ·  12 files  ·  6 personas               │
 │                                                             │
 │  VERDICT:  SHIP                                             │
-│  5 SHIP  ·  0 HOLD  ·  0 REJECT                             │
+│  6 SHIP  ·  0 HOLD  ·  0 REJECT                             │
 ╰─────────────────────────────────────────────────────────────╯
 
 
@@ -279,6 +279,7 @@ Followed by an iteration prompt (see below).
   QA           ✓ SHIP      tests cover the new branches
   PM           ✓ SHIP      scope matches the ticket
   CLIENT       ✓ SHIP      no user-visible regression
+  JUNIOR       ✓ SHIP      could follow it without asking
 
 
   Want details? Reply with:
@@ -292,10 +293,10 @@ Followed by an iteration prompt (see below).
 ```text
 ╭─────────────────────────────────────────────────────────────╮
 │  PANEL REVIEW                                               │
-│  range:main..HEAD  ·  18 files  ·  5 personas               │
+│  range:main..HEAD  ·  18 files  ·  6 personas               │
 │                                                             │
 │  VERDICT:  HOLD                                             │
-│  3 SHIP  ·  2 HOLD  ·  0 REJECT                             │
+│  4 SHIP  ·  2 HOLD  ·  0 REJECT                             │
 ╰─────────────────────────────────────────────────────────────╯
 
 
@@ -306,6 +307,7 @@ Followed by an iteration prompt (see below).
   QA           ▸ HOLD      need test for rounding edge first
   PM           ✓ SHIP      scope matches the ticket
   CLIENT       ✓ SHIP      end-to-end story still works
+  JUNIOR       ✓ SHIP      readable; one naming question
 
 
   TOP ISSUES — caught by 2+ personas
