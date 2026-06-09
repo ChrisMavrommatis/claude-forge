@@ -195,6 +195,14 @@ if (goMod) {
 // ---------- model ----------
 const model = data?.model?.display_name || 'Claude';
 
+// ---------- context window (from the JSON) ----------
+const ctx = data?.context_window;
+
+// ---------- session name / effort / rate limits (from the JSON) ----------
+const sessionName = data?.session_name;
+const effort = data?.effort?.level;
+const rl = data?.rate_limits;
+
 // ---------- session cost / lines / duration (from the JSON) ----------
 const cost = data?.cost?.total_cost_usd;
 const linesAdded = data?.cost?.total_lines_added || 0;
@@ -202,51 +210,80 @@ const linesRemoved = data?.cost?.total_lines_removed || 0;
 const durationMs = data?.cost?.total_duration_ms;
 
 // ---------- assemble ----------
-const segments = [];
+// Segments are grouped by purpose. Within a group the PRIMARY fact is shown
+// in colour and the secondary details are faint ("barely visible"). Groups
+// are separated by a faint divider. Everything stays on one line and wraps
+// naturally if the terminal is narrow.
 
-segments.push(cyan(`📁 ${dirLabel}`));
+const faint = (t) => C('90', t); // dim grey — secondary info
+const label = (t) => C('37', t); // soft white — a touch more visible
+const divider = faint('  │  ');
 
+const groups = [];
+const addGroup = (...parts) => {
+  const g = parts.filter(Boolean).join(' ');
+  if (g) groups.push(g);
+};
+
+// WHERE — folder primary; detected stack barely visible
+addGroup(cyan(`📁 ${dirLabel}`), stacks.length ? faint(stacks.join(' ')) : '');
+
+// SOURCE CONTROL — branch primary; changes (ahead/behind, dirty, age) faint
 if (branch) {
-  const badge = flowBadge(branch);
-  let sync = '';
-  if (ahead > 0) sync += ` ↑${ahead}`;
-  if (behind > 0) sync += ` ↓${behind}`;
-  const text = `${badge} ${branch}${sync}`;
-  segments.push(dirty ? yellow(`${text} ●`) : green(text));
-}
-
-if (commitAge) segments.push(dim(`@ ${commitAge}`));
-
-for (const s of stacks) segments.push(blue(s));
-
-segments.push(magenta(`🤖 ${model}`));
-
-if (typeof cost === 'number' && cost > 0) {
-  segments.push(green(`💰 $${cost.toFixed(2)}`));
-}
-
-if (linesAdded > 0 || linesRemoved > 0) {
-  segments.push(
-    `📝 ${green('+' + linesAdded)} ${red('-' + linesRemoved)}`
+  const changes = [];
+  if (ahead > 0) changes.push(`↑${ahead}`);
+  if (behind > 0) changes.push(`↓${behind}`);
+  if (dirty) changes.push('●');
+  if (commitAge) changes.push(`@ ${commitAge}`);
+  addGroup(
+    green(`${flowBadge(branch)} ${branch}`),
+    changes.length ? faint(changes.join(' ')) : ''
   );
 }
 
+// ENGINE — model primary; effort faint; context colour-coded (colour = signal)
+let ctxPart = '';
+if (ctx && typeof ctx.used_percentage === 'number') {
+  const pct = Math.round(ctx.used_percentage);
+  const used = fmtTokens(ctx.total_input_tokens);
+  const size = fmtTokens(ctx.context_window_size);
+  let label = `🧠 ${pct}%`;
+  if (used && size) label += ` ${used}/${size}`;
+  const col = pct >= 85 ? red : pct >= 60 ? yellow : green;
+  ctxPart = col(label);
+}
+addGroup(magenta(`🤖 ${model}`), effort ? faint(`🎚 ${effort}`) : '', ctxPart);
+
+// SESSION SPEND — cost primary; lines + time spent faint
+let costPart = '';
+if (typeof cost === 'number' && cost > 0) costPart = green(`💰 $${cost.toFixed(2)}`);
+const spendExtras = [];
+if (linesAdded > 0 || linesRemoved > 0) spendExtras.push(`+${linesAdded} -${linesRemoved}`);
 if (typeof durationMs === 'number' && durationMs > 0) {
-  segments.push(dim(`⏱ ${fmtDuration(durationMs)}`));
+  spendExtras.push(`⏱ ${fmtDuration(durationMs)}`);
+}
+addGroup(costPart, spendExtras.length ? faint(spendExtras.join(' ')) : '');
+
+// ACCOUNT — rate limits, colour-coded by the more-used window
+if (rl) {
+  const fh = rl.five_hour?.used_percentage;
+  const sd = rl.seven_day?.used_percentage;
+  const parts = [];
+  if (typeof fh === 'number') parts.push(`5h:${Math.round(fh)}%`);
+  if (typeof sd === 'number') parts.push(`7d:${Math.round(sd)}%`);
+  if (parts.length) {
+    const max = Math.max(fh || 0, sd || 0);
+    const col = max >= 85 ? red : max >= 60 ? yellow : green;
+    addGroup(col(`⚡ ${parts.join(' ')}`));
+  }
 }
 
-segments.push(dim(`🕐 ${clock()}`));
+// SESSION — its own label group at the end of the line
+if (sessionName) addGroup(label(`🏷 ${sessionName}`));
 
-process.stdout.write(segments.join(dim('  •  ')));
+process.stdout.write(groups.join(divider));
 
 // ---------- small formatters ----------
-function clock() {
-  const d = new Date();
-  return `${String(d.getHours()).padStart(2, '0')}:${String(
-    d.getMinutes()
-  ).padStart(2, '0')}`;
-}
-
 function relAge(thenMs) {
   const sec = Math.max(0, Math.floor((Date.now() - thenMs) / 1000));
   if (sec < 60) return 'now';
@@ -267,6 +304,12 @@ function fmtDuration(ms) {
   if (min < 60) return `${min}m`;
   const hr = Math.floor(min / 60);
   return `${hr}h${min % 60}m`;
+}
+
+function fmtTokens(n) {
+  if (typeof n !== 'number' || n <= 0) return '';
+  if (n >= 1000000) return (n / 1000000).toFixed(n % 1000000 ? 1 : 0) + 'M';
+  return Math.round(n / 1000) + 'k';
 }
 
 function hasFileMatching(d, re) {

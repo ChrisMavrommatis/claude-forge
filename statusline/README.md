@@ -7,23 +7,28 @@ types.
 
 ## What it shows
 
+Segments are **grouped by purpose**, separated by a grey `│` divider. Three
+visibility tiers: the primary fact in each group is in colour, the session
+label is soft white, and the secondary details are dim grey. It's one line
+and wraps naturally if the terminal is narrow.
+
 ```
-📁 forge  •  🌱 feature/x ↑2 ↓1 ●  •  @ 2h  •  .NET 10.0  •  ⬢ 20  •  🤖 Opus 4.8  •  💰 $0.42  •  📝 +120 -8  •  ⏱ 14m  •  🕐 14:32
+📁 forge .NET 10.0  │  🌱 feature/x ↑2 ↓1 ● @ 2h  │  🤖 Opus 4.8 🎚 high 🧠 42% 85k/200k  │  💰 $0.42 +120 -8 ⏱ 14m  │  ⚡ 5h:34% 7d:12%  │  🏷 checkout
+└──── where ────┘   └──── source control ────┘   └──────── engine ────────┘   └──── spend ────┘   └─ account ─┘   └─ session ─┘
 ```
 
-| Segment        | Source            | Shows when                          |
-| -------------- | ----------------- | ----------------------------------- |
-| 📁 dir         | session JSON      | always (project-relative if inside) |
-| git-flow badge | branch name       | in a git repo                       |
-| `↑n ↓n`        | `git rev-list`    | ahead/behind upstream is non-zero   |
-| `●`            | `git status`      | working tree is dirty               |
-| `@ age`        | last commit time  | in a git repo                       |
-| toolchain(s)   | manifest files    | a known stack is detected           |
-| 🤖 model       | session JSON      | always                              |
-| 💰 cost        | session JSON      | session cost > 0                    |
-| 📝 +adds -dels | session JSON      | lines changed this session          |
-| ⏱ duration    | session JSON      | session has run time                |
-| 🕐 clock       | local time        | always                              |
+| Group          | Primary (colour)        | Secondary (faint)                         |
+| -------------- | ----------------------- | ----------------------------------------- |
+| Where          | 📁 dir                  | detected toolchain(s)                     |
+| Source control | 🌿 branch (git-flow)    | `↑n ↓n` ahead/behind · `●` dirty · `@ age`|
+| Engine         | 🤖 model                | 🎚 `effort.level` · 🧠 context*           |
+| Spend          | 💰 `cost.total_cost_usd`| `+adds -dels` · ⏱ duration                |
+| Account        | ⚡ `rate_limits`        | —                                         |
+| Session        | —                       | 🏷 `session_name`                         |
+
+\* Context (`context_window`) keeps its own green/yellow/red colour — the
+colour is the warning, so it isn't dimmed. Each group is omitted when it
+has no data.
 
 ### git-flow badges
 
