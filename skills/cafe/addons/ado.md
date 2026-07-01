@@ -67,7 +67,7 @@ Placeholders:
 | ADO.17 | Open security alerts (advsec — dependency, code-scan, secrets)            | Security posture — only useful when Advanced Security is enabled             | ⛔      | S    |
 | ADO.18 | Wiki pages changed in window                                              | Drift signal (note: underlying tool can't filter by date today)              | ⛔      | L    |
 | ADO.19 | Red builds on any active branch across the project (team weather)         | A lead's view — "is anything broken anywhere, not just my branch"           | ⛔      | L    |
-| ADO.20 | PRs open > 7 days with no assigned reviewer (team weather)                 | "PRs going stale with nobody looking" — team throughput signal              | ⛔      | M    |
+| ADO.20 | PRs open > 7 days with no assigned reviewer (team weather)                 | "PRs going stale with nobody looking" — team throughput signal              | ⛔      | L    |
 
 ### Details
 
@@ -403,37 +403,54 @@ Empty render: *"No wiki changes."*
 
 #### ADO.19 — Red builds on any active branch (team weather)
 
-**Cost:** L · ~1s · per project. Team-weather tier — opt-in and budget-warned.
+**Cost:** L · fan-out: 1 definition list + ~1 call per pipeline · per project. Team-weather tier — opt-in and budget-warned. Build objects are large (~6KB each); scope per definition and keep `top` small to bound payload.
 
 Latest build per active branch across the project, surfacing any that are red — not just `main` and the user's current branch (ADO.4 already covers those two). Turns the personal brief into a lead's morning sweep: "is anything broken anywhere?"
 
 ```
+# One unscoped top=N call is dominated by the busiest pipeline and silently
+# misses other repos/branches — so scope per pipeline definition instead.
+pipelines_get_build_definitions(project=${project})     # list pipeline definition ids
+# then, per definition:
 pipelines_get_builds(
   project=${project},
+  definitions=${definitionId},
   queryOrder="QueueTimeDescending",
-  top=50
+  top=10
 )
-# Orchestrator groups by branchName, keeps the most recent build per branch,
-# and renders branches whose latest result is red. Caps the rendered list at ~5;
-# beyond that, an overflow line ("…and N more red branches").
+# Orchestrator: per definition, group by `sourceBranch` (e.g. "refs/heads/main"),
+# keep the most recent build per branch, and render branches whose latest `result`
+# is red. `result` is a NUMERIC enum (2=Succeeded, 4=PartiallySucceeded, 8=Failed,
+# 32=Canceled) — red = 8; don't confuse it with the separate numeric `status` field.
+# Cap the rendered list at ~5; beyond that, an overflow line ("…and N more red branches").
 ```
 
 Empty render: *"No red builds across the project."*
 
 #### ADO.20 — Aged PRs with no reviewer (team weather)
 
-**Cost:** M · ~600ms · per repo (parallel). Team-weather tier — opt-in and budget-warned.
+**Cost:** L · list ~600ms per repo + one detail call per aged PR (fan-out) · Team-weather tier — opt-in and budget-warned. Only PRs older than 7 days need the detail call, which bounds the fan-out.
 
 Active PRs opened more than 7 days ago that have no reviewer assigned — PRs going stale with nobody looking. A team-throughput signal for a lead, not a personal to-do.
 
 ```
+# Step 1 — list active PRs and keep the aged ones. The list response carries
+# creationDate / createdBy / title but NOT reviewers[], so reviewer filtering
+# cannot happen here.
 repo_list_pull_requests_by_repo_or_project(
   project=${project},
   repositoryId=${repo},
   status=Active
 )
-# Orchestrator filters: creationDate older than 7 days AND reviewers[] empty
-# (or contains only the author). Sort oldest-first.
+# keep PRs whose creationDate is older than 7 days.
+# Step 2 — per aged candidate, fetch reviewers (only present on the detail call):
+repo_get_pull_request_by_id(
+  project=${project},
+  repositoryId=${repo},
+  pullRequestId=${prId}
+)
+# keep PRs where reviewers[] is empty, or contains only the author (compare each
+# reviewer's id / uniqueName against createdBy.id / uniqueName). Sort oldest-first.
 ```
 
 Empty render: *"No stale unreviewed PRs."*
