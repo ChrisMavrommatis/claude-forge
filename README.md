@@ -6,7 +6,8 @@ My Claude Code customisations - skills, agents, hooks, settings - kept under ver
 
 ```text
 claude-forge/
-├── skills/         # slash skills, one folder per skill
+├── skills/         # slash skills, one folder per skill (install globally)
+├── .claude/skills/ # project-scoped repo-tooling skills (loaded only here)
 ├── statusline/     # cross-platform Claude Code status line
 ├── bin/            # install scripts (PowerShell + bash)
 ├── .plans/         # planning docs for upcoming work
