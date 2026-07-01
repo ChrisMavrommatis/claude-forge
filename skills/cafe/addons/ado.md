@@ -66,6 +66,8 @@ Placeholders:
 | ADO.16 | Recent build/release runs across the project                              | "What deployed lately"                                                       | ⛔      | L    |
 | ADO.17 | Open security alerts (advsec — dependency, code-scan, secrets)            | Security posture — only useful when Advanced Security is enabled             | ⛔      | S    |
 | ADO.18 | Wiki pages changed in window                                              | Drift signal (note: underlying tool can't filter by date today)              | ⛔      | L    |
+| ADO.19 | Red builds on any active branch across the project (team weather)         | A lead's view — "is anything broken anywhere, not just my branch"           | ⛔      | L    |
+| ADO.20 | PRs open > 7 days with no assigned reviewer (team weather)                 | "PRs going stale with nobody looking" — team throughput signal              | ⛔      | M    |
 
 ### Details
 
@@ -399,6 +401,43 @@ wiki_get_page(project=${project}, wikiIdentifier=<wikiId>, path=<path>)
 
 Empty render: *"No wiki changes."*
 
+#### ADO.19 — Red builds on any active branch (team weather)
+
+**Cost:** L · ~1s · per project. Team-weather tier — opt-in and budget-warned.
+
+Latest build per active branch across the project, surfacing any that are red — not just `main` and the user's current branch (ADO.4 already covers those two). Turns the personal brief into a lead's morning sweep: "is anything broken anywhere?"
+
+```
+pipelines_get_builds(
+  project=${project},
+  queryOrder="QueueTimeDescending",
+  top=50
+)
+# Orchestrator groups by branchName, keeps the most recent build per branch,
+# and renders branches whose latest result is red. Caps the rendered list at ~5;
+# beyond that, an overflow line ("…and N more red branches").
+```
+
+Empty render: *"No red builds across the project."*
+
+#### ADO.20 — Aged PRs with no reviewer (team weather)
+
+**Cost:** M · ~600ms · per repo (parallel). Team-weather tier — opt-in and budget-warned.
+
+Active PRs opened more than 7 days ago that have no reviewer assigned — PRs going stale with nobody looking. A team-throughput signal for a lead, not a personal to-do.
+
+```
+repo_list_pull_requests_by_repo_or_project(
+  project=${project},
+  repositoryId=${repo},
+  status=Active
+)
+# Orchestrator filters: creationDate older than 7 days AND reviewers[] empty
+# (or contains only the author). Sort oldest-first.
+```
+
+Empty render: *"No stale unreviewed PRs."*
+
 ## Defaults
 
 When this addon is enabled, these catalog calls come on automatically. Toggle individual calls via `/cafe barista calls`.
@@ -414,6 +453,8 @@ When this addon is enabled, these catalog calls come on automatically. Toggle in
 **Enabled in a fresh profile:** yes — a barista interview seeds an `ado` block by default.
 
 **Notable opt-ins:** ADO.5 (recent commits on main via ADO — redundant with git GIT.2 for cloned repos), ADO.6 (items closed since I left), ADO.13 (PR approval count), ADO.14 (PR @-mentions — heavy), ADO.17 (security alerts), ADO.18 (wiki drift).
+
+**Team-weather tier (opt-in, budget-warned):** ADO.19 (red builds on any active branch) and ADO.20 (aged PRs with no reviewer) turn the personal brief into a lead's morning sweep across the whole project. Both are higher-cost, so they stay opt-in and the barista warns at add-time if enabling them pushes the predicted brief over `budget_ms` — same gate as the other heavy calls. Enable via `barista calls`.
 
 ## Failure mode
 

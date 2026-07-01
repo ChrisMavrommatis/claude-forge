@@ -29,6 +29,6 @@
 
   "git": {
     "repos": [],
-    "enabled_calls": ["GIT.1", "GIT.2", "GIT.3", "GIT.4"]
+    "enabled_calls": ["GIT.1", "GIT.2", "GIT.3", "GIT.4", "GIT.5"]
   }
 }

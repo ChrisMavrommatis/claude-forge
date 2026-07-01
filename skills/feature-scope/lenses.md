@@ -6,7 +6,9 @@ walk; the lenses are how the scope is written down.
 
 They all rest on **following the feature through the system** (see SKILL.md → "The main
 technique"): walk where the data comes in, where it is used, what existing thing could
-carry it, what would change, what breaks. Each thing you hit is a part to build (→ Build),
+carry it, what would change, what breaks. A discovery pass over the code at setup (offered,
+run on the user's ok) seeds this with real touch points and reuse paths, so the parts come
+from the codebase and not only the request. Each thing you hit is a part to build (→ Build),
 a choice (→ Build, as options + tradeoffs), or a decision (→ Unknowns, then Decided). The
 parts you find are the steps the user walks.
 
@@ -36,7 +38,9 @@ file-by-file code.
 
 **Do:**
 - Follow the feature and name the parts of work it implies (import a set, validate on entry,
-  show the error). Tag each by what backs it: `#request`, `#code`, `#pattern`.
+  show the error). Source the parts and choices from the discovery pass over the code where
+  one ran, not only the request and memory. Tag each by what backs it: `#request`, `#code`,
+  `#pattern`.
 - **At every real choice, lay out the options with their tradeoffs and a recommended pick.**
   The build-vs-reuse decision is the most useful output here. Format a choice as:
   ```
@@ -62,9 +66,18 @@ one at a time is the walk.
 **Settling a part — three ways.** For each part, show it (and its choice, if any), then ask
 how the user wants to settle it:
 - **Decide** — the user picks the approach, or confirms the recommended pick.
-- **Tell me your approach** — the user says how they plan to build it; record it.
+- **Tell me your approach** — the user says how they plan to build it. Before recording it,
+  check the code (from the discovery pass, or a quick focused explore) for a reuse path or a
+  different seam they didn't mention. If one exists, surface it as a choice against their
+  approach — options, tradeoffs, a recommended pick — and let them re-decide. If nothing
+  better shows up, record their stated approach.
 - **Explore** — send a separate agent one focused question (for example, "does the existing
   import remove stale rows?"), it reports back, then the user decides.
+
+**Feasibility, per part.** For each part also ask: is there anything in the code that would
+block this approach — an extension point that must exist, a hook to attach to, a framework or
+permission constraint? A possible-but-unconfirmed blocker is an Unknown; a confirmed hard
+blocker holds the Size at Low confidence until it is resolved.
 
 Record the result and move to the next part. Don't size until every part is settled or
 explicitly left high-level.
@@ -84,6 +97,9 @@ skill: the unknowns are what someone forgets when they call it "small". Three ki
 - **Decision unknowns** — a choice the feature forces but nobody raised (saved addresses at
   checkout — do we block invalid ones?). Found by following the feature. Close by **deciding**
   (with the user) → moves to ☑️ Decided.
+- **Feasibility unknowns** — a possible blocker that isn't confirmed (does the extension point
+  exist? is there a hook to attach to? does a framework or permission rule stop this?). Close
+  by **sending an explore agent**. A confirmed hard blocker holds the Size at Low confidence.
 
 **Don't:** list generic, theoretical unknowns any senior dev could recite. An unknown earns
 its place only if its answer would move the Build or the Size. Don't leave an unknown
@@ -130,7 +146,9 @@ is settled. Confirming a risk in code is an Explore question, only when the user
 
 **Do:** Give the T-shirt size, the confidence, the one-line *why*, and the lever — what
 would move it. Confidence is set by how the parts were settled: a part left high-level or
-resting on a guess holds the size down. See the rubric tables in SKILL.md.
+resting on a guess holds the size down. An unresolved hard blocker forces Low confidence no
+matter how many parts are settled — the lever is "confirm the blocker." See the rubric tables
+in SKILL.md.
 
 **Don't:** ever give a bare size. Don't present a Low-confidence size as settled. Don't pad
 against unknowns quietly, and don't lowball to please. If it is **L**, say it isn't small

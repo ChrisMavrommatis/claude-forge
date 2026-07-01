@@ -14,7 +14,7 @@
 - <possibility, phrased as a question — unconfirmed>
 
 🔲 Open
-- <what we still need answered>
+- <what we still need answered — tag [me] (a probe I can run) or [you] (evidence only you can get)>
 
 ☑️ Decided
 - <confirmed calls — incl. the confirmed meaning. Kept light.>

@@ -4,7 +4,7 @@ Read this first if you're picking up this skill cold. It orients you to what thi
 
 ## What this skill is for
 
-Multi-persona code review. The orchestrator dispatches several role-based sub-agents (Dev, Tech Lead, QA, PM, Client, Junior, plus optional security / devops / accessibility / performance) in parallel against the same diff, then consolidates their findings into one verdict (SHIP / HOLD / REJECT). The strongest signal is **convergence** — anything 2+ personas independently flag is almost certainly real. Solo `[BLOCK]`-severity findings from a specialist also surface in the summary, marked with `*`.
+Multi-persona code review. The orchestrator dispatches several role-based sub-agents (Dev, Tech Lead, QA, PM, Client, Junior, plus optional security / devops / accessibility / performance / contract) in parallel against the same diff, then consolidates their findings into one verdict (SHIP / HOLD / REJECT). The strongest signal is **convergence** — anything 2+ personas independently flag is almost certainly real. For convergence to mean independent agreement, each persona owns distinct `Look for:` concerns (no bullet is shared across two files); when two personas converge on the same owning concern, it's discounted to solo-strength, not counted as 2+. Solo `[BLOCK]`-severity findings from a specialist also surface in the summary, marked with `*`.
 
 ## Mental model
 
@@ -39,7 +39,9 @@ Multi-persona code review. The orchestrator dispatches several role-based sub-ag
 - **Separate `Tagline` field for the verdict table.** Personas write one-sentence verdict reasons; those don't fit in a 37-char table column. Solution: personas produce a separate `Tagline` (≤37 chars) for the table cell, distinct from the full verdict reason that lives in the card.
 - **One canonical verdict rule.** Originally duplicated in SKILL.md step 7 and `veto.md`. Reconciled: SKILL.md is canonical; `veto.md` just describes how vetos hook into the REJECT branch and the `HOLD†` acknowledgment state.
 - **Veto is per-persona opt-in via frontmatter (`veto: true`).** No persona is veto-eligible by default. `security` ships with `veto: true` but is `tier: optional` — must be explicitly added to the panel for veto behaviour to fire. Keeps the skill portable for orgs whose gatekeepers differ.
-- **`security` is the only veto-eligible built-in.** QA was considered but rejected — QA's REJECT is usually about test-process gaps, not absolute defects; a HOLD is the right weight there.
+- **Two veto-eligible built-ins: `security` and `contract`.** `security` covers auth / secrets / injection / personal-data; `contract` covers backward-incompatible external API / schema breaks and destructive migrations. `contract`'s veto-eligibility is a **provisional decision** made when the persona was added — flagged in `personas/contract.md` to revisit; if external breaks read better as a hard `[BLOCK]` than a veto, drop its `veto: true`. QA was considered for veto too but rejected — QA's REJECT is usually about test-process gaps, not absolute defects; a HOLD is the right weight there.
+- **Persona concern ownership is single-owner (de-dup).** Each shared concern has exactly one owning persona and appears in exactly one `Look for:` list: observability → devops; every-request I/O / caching → performance (devops as fallback); silent failure → techlead; comment drift → dev; cross-branch merge → techlead; cross-team dependency → pm; test adequacy → qa. `techlead` is the **internal** architecture lens (module seams, abstraction fit, internal-interface changes, dependency/tech-debt); `contract` is the **external** surface. Don't reintroduce a shared bullet — it re-inflates the convergence signal.
+- **`junior` contributes unique signal only, never convergent.** Its voice phrases findings as questions, so it almost never joins a 2+ TOP entry. Kept required for the onboarding lens, documented in `SKILL.md` so nobody treats its absence from convergence as a bug.
 - **Minimal Unicode, used only where it helps.** Just one bordered box (`panel-overview` with `╭ ╮ ╰ ╯` rounded corners); every other section uses heading + single horizontal rule + indented content. Single-glyph verdict markers (`✓ ▸ ✗ !`) for the verdict table; `[!]` token for alert headings (veto, panel-failed, large change, refuse). Earlier iterations had heavy double-line borders and full per-persona card boxes; those rendered poorly on narrow terminals and were dropped.
 - **Two width regimes.** Header box and verdict table at **62 cols** (structured columns rely on alignment). Issue lines **unconstrained** — title runs as long as needed (target ≤ 190 chars), hard-wraps with hanging indent at col 10 only if it overflows. Earlier "fixed 64-char card width" idea was dropped along with the card borders.
 - **Three-layer indent for findings.** `[` and `*` at col 2 (gutter — new issue tag, personas line). `·` and `>` at col 7 (sub-bullet — `·` file:line ref, `>` code/note/rationale). Title and sub-bullet content at col 10. The gutter glyphs and the sub-bullet glyphs each map to a fixed meaning, so the reader can scan a column for "who", "where", or "what".
@@ -55,7 +57,7 @@ Multi-persona code review. The orchestrator dispatches several role-based sub-ag
 - Veto mechanism with criteria-based escalation, written-acknowledgment override, and `HOLD†` state.
 - Failure handling: individual failures don't kill the run; all-failed aborts cleanly.
 - Output schema validation: malformed persona output → FAILED.
-- Ten personas (5 required, 5 optional including accessibility + performance).
+- Eleven personas (6 required — dev, techlead, qa, pm, client, junior; 5 optional — security, devops, accessibility, performance, contract).
 
 ## Deliberately out of scope
 

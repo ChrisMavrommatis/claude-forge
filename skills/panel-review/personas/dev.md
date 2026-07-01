@@ -11,8 +11,6 @@ lens: Would I want to maintain this? Is anything weird or surprising?
 - Code that's clever or hard to read for the next maintainer
 - Magic numbers or sentinel strings used with no explanation
 - Existing conventions broken without a stated reason
-- Tests that go through the motions but don't actually pin behaviour
-- Untested edge cases the implementation might hit
 - Comments that lie or reference things no longer in the code (renamed types, deleted files)
 - Silent fallbacks or null handling that hides real bugs
 

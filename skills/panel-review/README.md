@@ -2,10 +2,10 @@
 
 Multi-persona review of a code change. Dispatches several role-based
 review agents in parallel — Dev, Tech Lead, QA, PM, Client, Junior by
-default; Security / DevOps / Accessibility / Performance as opt-ins —
-and consolidates their findings into one verdict. The strongest signal
-is **convergence**: anything flagged by 2+ personas is almost always
-real.
+default; Security / DevOps / Accessibility / Performance / Contract as
+opt-ins — and consolidates their findings into one verdict. The
+strongest signal is **convergence**: anything flagged by 2+ personas is
+almost always real.
 
 ## Quick start
 
@@ -106,12 +106,14 @@ condition is met, so the always-on context stays small.
 - **Run only some personas** — `--personas=dev,client` overrides the default panel.
 - **Change models per run** — `--model=opus|sonnet|haiku` (defaults to Sonnet).
 
-The skill ships with `security` as the only veto-eligible persona,
-but `security` is `tier: optional` — it's not on the default panel.
-To enable veto behaviour, add it explicitly:
-`/panel-review --personas=dev,techlead,qa,pm,client,security`. Other
-personas can be made veto-eligible by editing their files (see
-[veto.md](veto.md)).
+The skill ships with two veto-eligible personas, `security` and
+`contract` (external API / schema / migration compatibility), both
+`tier: optional` — neither is on the default panel. To enable veto
+behaviour, add them explicitly, e.g.
+`/panel-review --personas=dev,techlead,qa,pm,client,security,contract`.
+Other personas can be made veto-eligible by editing their files (see
+[veto.md](veto.md)). `contract`'s veto-eligibility is a provisional
+call, flagged in the file to revisit.
 
 ## Design principles
 

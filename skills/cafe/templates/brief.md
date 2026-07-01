@@ -33,7 +33,7 @@ Underlying data:
 - **Your inbox.** PR #1240 "Add gift wrapping option" (Eleni, 6 files, opened 2 days ago) awaiting Pavlos's review. PR #1238 "Giftcard validation update" (Pavlos's own) has one unresolved comment from Yorgos on `src/giftcards/stock-step.ts:42`, posted four hours ago.
 - **Your queue.** #5678 "Giftcard purchase flow" — in progress, due Wednesday. #5681 "Survey addon deferred" — to do. #5689 "Checkout regression #4" — bug, to do.
 - **Builds.** `main` red since this morning — `checkout.test.giftcardStockAlignsWithCartTotal` failing. Last passing commit: `c8f1a2e`.
-- **Drift.** `.plans/giftcards-stock-rewrite.md` references five files that have moved since the plan was last touched.
+- **Drift.** His current branch `features/giftcard-flow` is 6 commits behind `main` — `main` moved while he was away (rebase signal, GIT.4).
 - **State.** 5-day streak. Yesterday's pick was *"reply to Yorgos on PR #1238"* — not yet done (the comment is still unresolved).
 
 The brief that gets rendered, four ways:
@@ -68,7 +68,7 @@ The brief that gets rendered, four ways:
 
 ## 🌊 Drift
 
-- ⚠️ `.plans/giftcards-stock-rewrite.md` — 5 referenced files moved
+- ⚠️ `features/giftcard-flow` needs a rebase — `main` moved 6 commits while you were away
 
 ## 🎯 Pick of the day
 
@@ -106,7 +106,7 @@ Same data, terse voice. Drops the date subtitle, drops the weather line at the t
 
 ## 🌊 Drift
 
-- ⚠️ `giftcards-stock-rewrite.md` — 5 refs moved
+- ⚠️ `features/giftcard-flow` — 6 behind `main`, rebase
 
 ## 🎯 Pick
 
@@ -150,7 +150,7 @@ Friendly tone, full sentences. Greeting on top. Entries get a *why* clause.
 
 ## 🌊 Drift
 
-- ⚠️ `.plans/giftcards-stock-rewrite.md` — five of the referenced files have moved since you last touched the plan. Worth a re-read before you resume.
+- ⚠️ `features/giftcard-flow` needs a rebase — `main` moved 6 commits while you were away. Worth catching up before you push again.
 
 ## 🎯 Pick of the day
 
@@ -199,8 +199,8 @@ Same metrios voice, but each entry picks up a sub-line with the extra context.
 
 ## 🌊 Drift
 
-- ⚠️ `.plans/giftcards-stock-rewrite.md` — 5 referenced files moved since last touched
-  - Moved: `GiftcardStockService.cs` → `Services/`, plus 4 others under `Pipelines/`
+- ⚠️ `features/giftcard-flow` needs a rebase — `main` moved 6 commits while you were away
+  - Behind since Friday · last shared commit `c8f1a2e` · 6 commits to replay
 
 ## 🎯 Pick of the day
 
@@ -248,6 +248,8 @@ One line below header. Compute from gathered data — red builds count, aged-PR 
 - `🌤` — attention soon (aged PRs > 7 days or one overdue item).
 - `⛈` — red builds on `main`, or multiple overdue items.
 
+When the team-weather calls are enabled (ADO.19 red builds across the project, ADO.20 aged unreviewed PRs), fold their counts into the same weather computation — the line then reflects the whole project, not just the user's branch. Render the underlying items in Builds (ADO.19 red branches) and Your inbox (ADO.20 stale PRs).
+
 ## 📰 Since you left
 
 ```markdown
@@ -261,6 +263,7 @@ Status icons:
 - `✅` — merged PR.
 - `🔧` — branch pushes / code activity.
 - `🔴` — red build event.
+- `📝` — uncommitted work in your local tree (from GIT.5).
 
 Sort order: most recent first. Cap at 5 entries. If more, append the overflow line:
 
@@ -269,6 +272,16 @@ Sort order: most recent first. Cap at 5 entries. If more, append the overflow li
 ```
 
 `{{overflow_summary}}` is a one-clause characterization of the hidden items (e.g. "all bugs, all New", "all due this week", "all by Eleni"). If nothing characteristic stands out, drop the trailing clause and keep the bare `…and N more`.
+
+### Uncommitted work (from GIT.5)
+
+When a repo has uncommitted changes, append one line to that repo's Since you left entries. Hidden when the tree is clean (count 0).
+
+```markdown
+- 📝 {{repo_name}} — {{N}} uncommitted files in your working tree
+```
+
+`me-gala` fullbody: name up to the first three changed paths after the count; append `+N more` beyond three.
 
 ## 📬 Your inbox · {{count}}
 

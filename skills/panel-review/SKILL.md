@@ -1,6 +1,6 @@
 ---
 name: panel-review
-description: Multi-persona review of a change — Dev, Tech Lead, QA, PM, Client, Junior by default, plus optional security / devops / accessibility / performance. Surfaces issues caught by 2+ personas as the strongest signal. Read-only. Examples — `/panel-review`, `/panel-review range:main..HEAD`, `/panel-review --personas=dev,security`.
+description: Multi-persona review of a change — Dev, Tech Lead, QA, PM, Client, Junior by default, plus optional security / devops / accessibility / performance / contract. Surfaces issues caught by 2+ personas as the strongest signal. Read-only. Examples — `/panel-review`, `/panel-review range:main..HEAD`, `/panel-review --personas=dev,security`.
 ---
 
 # Panel Review
@@ -67,6 +67,9 @@ Each persona is a markdown file in `personas/`. The skill scans the folder every
 | `personas/devops.md`          | optional | Site reliability engineer                                  |
 | `personas/accessibility.md`   | optional | Accessibility engineer (a11y, keyboard, screen-reader)     |
 | `personas/performance.md`     | optional | Performance engineer (latency, throughput, resource cost)  |
+| `personas/contract.md`        | optional | Integration engineer — external API / schema / migration compatibility (veto-eligible) |
+
+**Junior's signal is unique-only.** The `junior` persona phrases findings as questions ("where would I get stuck?"), not defects. By design it surfaces onboarding and clarity gaps no one else sees — but under root-cause matching it almost never joins a convergent (2+) TOP entry. That's expected: junior contributes **unique** signal, never convergent. It stays a required persona because the onboarding lens is worth having, not because it feeds the convergence count.
 
 ### Adding or modifying a persona
 
@@ -186,6 +189,8 @@ The orchestrator maps these to the rendered output: `file:line` items become `·
 **Verdict:** SHIP / HOLD / REJECT — <one-sentence reason>
 ```
 
+**Grounded SHIP.** A SHIP verdict must name at least one specific thing this persona checked and found sound — a file, area, or behaviour — not a generic phrase. "Looks fine" or "no concerns" is not enough; "checked the retry path in RetryPolicy.cs and the backoff is bounded" is. This forces the persona to show it actually reviewed, rather than rubber-stamping. HOLD and REJECT verdicts already cite the blocking finding, so this rule only bites on SHIP.
+
 `Good:` and `Issues:` are mandatory one-liners (render `Issues: none worth flagging` even on a clean SHIP). Personas with an `Output extension — required for <name> persona:` block in their file add the sub-sections it declares; inject those instructions into the agent's prompt alongside the standard format.
 
 **Validation.** If a persona's returned output is missing any mandatory field (`Lens`, `Good`, `Issues`, `Top concerns` with severity tags, `Tagline`, `Verdict` with a valid value), mark that persona as FAILED with `agent error: malformed output (missing <field>)` and route through [failure.md](failure.md). Don't try to repair partial output — surfacing the failure is better than rendering an incomplete card.
@@ -233,6 +238,17 @@ For convergence ("caught by 2+ personas"), match by **root cause + file/line**, 
 - Unsure if findings match → **treat as distinct** (false negatives over false positives).
 
 When merging: pick the **most action-oriented framing** as the canonical title. The merged TOP entry shows that title plus a `* BY: <persona>, <persona>` line. Other framings drop from TOP; users see them by drilling in with `/panel-review --explain <persona>` or by viewing the per-persona cards in the details section.
+
+### Discount shared-concern convergence
+
+Convergence only means something when the personas agreed **independently**. Two personas flagging the same thing because both were told to look for it is one instruction counted twice, not two lenses agreeing.
+
+Guard against this in two steps:
+
+1. **Each persona's `Look for:` bullets are distinct after R1 de-dup** — no bullet appears in two persona files. So genuine convergence means two personas reached the same finding from different starting concerns.
+2. **When merging, check the owning concern.** Every persona file's `Look for:` bullets belong to that persona (its "owning concern" for that area). If two personas converge on a finding that traces back to the **same owning concern** — for example, both flag it as a test-adequacy gap when QA is the sole owner of that concern — do **not** count it as 2+. Render it as a **solo-strength** finding (single `* BY:` persona, `[BLOCK*]` if block-severity), attributed to the concern's owner.
+
+Only count a finding as convergent (2+) when the converging personas reached it from **different owning concerns**. This keeps the "caught by 2+ personas" signal measuring independent agreement, not redundancy.
 
 **Severity on merged entries.** When personas disagree on severity, the merged TOP entry uses the **most severe** tag. If any persona said `[BLOCK]`, the entry is `[BLOCK]` regardless of what others said.
 

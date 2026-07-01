@@ -55,7 +55,7 @@ The JSON templates give you the shape; these are the rules that aren't visible f
 
 ### state.json
 
-- **`last_run`** — drives the "since you left" window. Updated at the end of every successful brief.
+- **`last_run`** — drives the "since you left" window. Updated at the end of every successful brief. When a gap is detected (`streak == 0`, header reads `back after N days`), the window widens to cover the whole gap — see `SKILL.md` step 5.
 - **`streak`** — increment if today is yesterday + 1 workday. Reset to 1 if a workday was skipped. No nag.
 - **`last_pick`** — yesterday's pick + a machine-checkable description for "did you do it?". Used at the top of the next brief.
 - **`lifetime`** — counters for round-number celebrations (anniversaries).

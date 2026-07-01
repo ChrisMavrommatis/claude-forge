@@ -1,9 +1,9 @@
 # feature-scope
 
 Someone asks for "a small feature" — add zipcode validation, export to CSV, whatever.
-Before you quote it or plan the build, this skill **maps it out**: what we'd build, *how*
-we'd approach each part, where it touches the system, what decisions it forces, what could
-go wrong, and a **defensible size**.
+Before you quote it or plan the build, this skill works it out against the actual code: how
+you'd build each part, whether it's feasible here, where it touches the system, what the
+paths and tradeoffs are, what could go wrong, and a **defensible size**.
 
 It is the thinking you do *before* the detailed build plan:
 
@@ -18,16 +18,24 @@ solid.
 
 ## What makes it useful
 
-The high-value part is **"what we'd build *and how*"** — and "how" at the level that changes
-the size:
+The high-value part is **"how you'd build it, and whether it's feasible here"** — worked out
+against the code, at the level that changes the size:
 
+- **Discovery first.** At setup it offers a read-only pass over the codebase — where this
+  would connect, what it could reuse, what would block the obvious approach — so the parts and
+  the choices come from real code, not just the request and memory. Offered and run on your
+  ok, never fired automatically.
 - **Choices with tradeoffs.** Reuse an existing import, or build a custom one? They differ —
   e.g. the existing one may never remove entries deleted upstream (stale set), a custom one
   can (more work). The skill lays out the options, the tradeoff, and a recommended pick —
-  then *you* call it. It never picks on its own.
-- **Following the feature through the system.** It walks the feature end-to-end to find the
-  touch points and the decisions nobody asked — "checkout has saved addresses → do we block
-  invalid ones?" That walk is the main technique.
+  then *you* call it. It never picks on its own. Even when you state your own approach, it
+  checks the code for a reuse path or a different seam first and surfaces it as a choice.
+- **Feasibility per part.** For each part it asks whether anything in the code would block the
+  approach. An unresolved hard blocker holds the size at Low confidence until confirmed.
+- **Following the feature through the system.** It walks the feature end-to-end — against a
+  repeatable checklist (entry points, data model, permissions, async work, public contract,
+  tests, config, i18n) — to find the touch points and the decisions nobody asked, like
+  "checkout has saved addresses → do we block invalid ones?" That walk is the main technique.
 - **"How" stays approach-level.** Which mechanism, which building block, where it connects —
   not file-by-file code. That is the later build plan's job.
 
@@ -43,17 +51,19 @@ the size:
 
 ## How it behaves
 
-- **Guided, one part at a time.** It lists the parts of the feature, then walks them with you
-  one by one. For each part you decide the approach, tell it your plan, or ask it to explore —
-  then move to the next.
+- **Discovery, then a guided walk one part at a time.** It offers a read-only code pass at
+  setup, then lists the parts of the feature and walks them with you one by one. For each part
+  you decide the approach, tell it your plan, or ask it to explore — then move to the next.
 - **Honest sizing.** Never a bare size. Confidence is set by how the parts were settled — a
-  part left high-level or resting on a guess holds the size down. Settling a part moves it.
+  part left high-level or resting on a guess holds the size down; an unresolved hard blocker
+  holds it at Low. Settling a part moves it.
 - **Known vs. assumed, kept apart.** Every detail that drives the approach or the size
   carries a source tag (`#code`, `#pattern`, `#user`, `#request`, `#assumption`). A size
   resting on assumptions is flagged as such.
-- **Explores through a separate agent, only when asked.** When you pick Explore on a part, it
-  sends a separate agent to investigate one focused question and report back; you decide.
-  Read-only throughout; it never edits.
+- **Reads the code through a separate agent, offered before it runs.** A broad discovery pass
+  at setup, then focused per-part explores — both offered and run on your ok. It sends a
+  separate agent to investigate the question and report back; you decide. Read-only
+  throughout; it never edits.
 
 ## Use it
 

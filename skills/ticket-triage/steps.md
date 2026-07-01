@@ -43,6 +43,9 @@ clue either confirms a possibility, denies it, or raises a new OPEN question.
 
 **Don't:** list four equal-looking theories. Prefer the possibility the evidence
 supports; keep the rest as ❓ Maybe. A clue with no source is not a fact — it's a guess.
+Don't state a cause as settled here either: naming the problem is allowed only to the
+strength of its sources. An unsourced cause is a ❓ Maybe, never the named problem — a
+confident "the problem is X because Y" with no tag is a solution-jump in disguise.
 
 **Investigation rule:** one focused probe, then report back. Say what you're about to
 check before you check it. Don't go into a long dig unless the user says go on.
@@ -85,9 +88,12 @@ leaves unsolved. Weigh them honestly. Note which the evidence favours and why.
 **Don't:** pick for the user, or present one option as the only one. Don't start
 implementing — triage ends at options.
 
-**Leave it:** the user decides. Could be a small fix, a plan, or nothing. If the user
-explicitly says "now fix that" (or similar), you may leave read-only and make the
-change — otherwise you stay hands-off the code.
+**Leave it:** the user decides. Could be a small fix, a plan, or nothing. End with a
+short, copyable summary the user can paste into a plan or a fix — the confirmed problem
+(with its source tags), the option the evidence favours, and any still-open items.
+It's a summary, not a decision. If the user explicitly says "now fix that" (or
+similar), you may leave read-only and make the change — otherwise you stay hands-off
+the code.
 
 ---
 

@@ -73,4 +73,6 @@ step by step, with a hard stop before solutions.
 - **Don't promote a guess to a fact** without a source or user confirmation.
 - **Don't show RAW in the at-a-glance summary** — it belongs in the file.
 - **Don't dig silently.** One focused probe, then report back, unless told to continue.
+- **Don't stall or guess when evidence is out of reach.** If only the user can get it
+  (repro steps, a stack trace, which environment), say so and tell them what to fetch.
 - **Don't edit project code** until the user explicitly says fix it.

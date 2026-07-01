@@ -53,7 +53,7 @@ Placeholders:
 | GIT.2  | Commits by anyone else on `main` since last brief                     | "What landed while I was out"                                                | ✅      | XS   |
 | GIT.3  | Current branch name                                                   | Infrastructure — drives ADO.4's red-build check                              | ✅      | XS   |
 | GIT.4  | Behind/ahead count vs `main` — only renders when behind > 0           | "main moved while I was away, I need to rebase"                              | ✅      | XS   |
-| GIT.5  | Count of uncommitted files in working tree                            | "I left work mid-stream, files are dirty" reminder                           | ⛔      | XS   |
+| GIT.5  | Count of uncommitted files in working tree                            | "I left work mid-stream, files are dirty" reminder                           | ✅      | XS   |
 | GIT.6  | Local branches with no commits in last 30 days                        | Branch hygiene — old branches to delete                                      | ⛔      | S    |
 | GIT.7  | Commits on `main` since current branch's merge-base                   | "Your PR needs a rebase" — overlaps with GIT.4                               | ⛔      | S    |
 | GIT.8  | Nearest git tag + commits since that tag                              | Release-cadence signal (useless on repos with no tags)                       | ⛔      | S    |
@@ -124,7 +124,9 @@ Working-tree changes (modified, deleted, untracked). Orchestrator counts lines.
 git status --porcelain
 ```
 
-Empty render: hidden when 0.
+Renders as a one-line reminder under the repo's 📰 Since you left section (or the header when single-repo) — see [`templates/brief.md`](../templates/brief.md) → Uncommitted work. Empty render: hidden when 0.
+
+`me-gala` fullbody: list up to the first three changed paths after the count (the porcelain output already carries them). Beyond three, append `+N more`.
 
 #### GIT.6 — Stale local branches (>30 days)
 
@@ -214,10 +216,11 @@ When this addon is enabled, these catalog calls come on automatically. Toggle in
 | GIT.2  | New commits on main since I left (excl. mine) | What landed while you were away.                           |
 | GIT.3  | Current branch name                           | Drives ADO ADO.4 (red-build check) and Builds section.     |
 | GIT.4  | Rebase signal vs main                         | "main moved while you were away" — renders only when behind > 0. |
+| GIT.5  | Uncommitted file count                        | "I left work mid-stream" — cheap (~50ms), catches the most common Monday surprise. Hidden when 0. |
 
 **Enabled in a fresh profile:** yes — a barista interview seeds a `git` block by default.
 
-**Notable opt-ins:** GIT.5 (uncommitted count), GIT.6 (stale branches), GIT.7 (rebase needed), GIT.8 (tag distance), GIT.9 / GIT.10 (team commits / tags).
+**Notable opt-ins:** GIT.6 (stale branches), GIT.7 (rebase needed), GIT.8 (tag distance), GIT.9 / GIT.10 (team commits / tags).
 
 ## Failure mode
 

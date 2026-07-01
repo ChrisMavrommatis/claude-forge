@@ -55,7 +55,9 @@ Five steps, walked in order. Full detail in [steps.md](steps.md) — read it on 
 for your confirm. It does not advance on its own.
 
 **After SOLUTIONS.** Triage ends with options + tradeoffs. You decide what's next — a
-small fix, a plan, or nothing. The skill does not force a handoff.
+small fix, a plan, or nothing. The skill does not force a handoff, but it ends with a
+short copyable summary — the confirmed problem with its tags, the option the evidence
+favours, and any open items — so you can hand it to a plan or a fix if you want.
 
 ## Guardrails
 
@@ -123,7 +125,8 @@ Keep every line to as few words as possible. Maybe / Open lines are questions. D
 - tax applied twice?  #code
 
 🔲 Open
-- which rounding rule applies?
+- which rounding rule is intended?  [you]
+- where is the total computed?  [me]
 
 ☑️ Decided
 - PM means: checkout totals are wrong
@@ -132,10 +135,16 @@ Keep every line to as few words as possible. Maybe / Open lines are questions. D
 - **📍 Step** — where we are (the gate stays visible).
 - **✅ Facts** — confirmed, tagged with sources.
 - **❓ Maybe** — possibilities as questions; never stated as facts.
-- **🔲 Open** — what we still need answered.
+- **🔲 Open** — what we still need answered. Tag each `[me]` (a probe I can run — I'll
+  offer) or `[you]` (evidence only you can get — I'll say exactly what).
 - **☑️ Decided** — confirmed calls (incl. confirmed MEANING). Kept light.
 
 A ❓ moves to ✅ only when a source proves it or the user confirms it.
+
+**Re-audit on refresh.** On each live refresh — whenever a new claim or fact changes
+the picture — re-check the Facts list before reprinting: every ✅ still carries a
+source tag, and no ❓ was promoted without a source or your confirm. Any cause stated
+in the Notes prose must trace to a tagged fact, or be demoted to a ❓.
 
 ## The record in `.plans`
 

@@ -14,7 +14,7 @@
 - <possibility, phrased as a question — unconfirmed>
 
 🔲 Open
-- <what we still need answered for this finding>
+- <what we still need answered for this finding — tag [me] or [you]>
 
 ☑️ Decided
 - <confirmed calls for this finding>

@@ -1,14 +1,15 @@
 ---
 name: feature-scope
-description: Scope and size a small feature before you build it. It guides you through the feature one part at a time — for each part you decide the approach, tell the skill how you plan to build it, or have it send a separate agent to explore the code, then you decide. Build-vs-reuse choices are shown as options with tradeoffs and a recommended pick. Once every part is settled, it gives a size and a confidence. Read-only; explores the codebase only when you ask. Use when someone asks for a small feature and you need to understand the work before quoting or planning. Examples — `/feature-scope`, `/feature-scope <name>` to resume.
+description: Work out how you'd build a small feature, whether it's feasible in this codebase, what the paths and tradeoffs are, and how big it is — before you build it. It offers an upfront read-only pass over the code to see where the feature would connect, then guides you through the feature one part at a time — for each part you decide the approach, tell the skill how you plan to build it, or have it explore the code, then you decide. Reuse-vs-build choices are shown as options with tradeoffs and a recommended pick. Once every part is settled, it gives a size and a confidence. Read-only. Use when someone asks for a small feature and you need to understand the work before quoting or planning. Examples — `/feature-scope`, `/feature-scope <name>` to resume.
 ---
 
 # Feature Scope
 
 You bring a small feature someone asked for, like "add zipcode validation". Before you
-quote it or plan the build, this skill works it out: what to build, how to approach each
-part, what is unclear, what could go wrong, and how big it is. It does not write code. It
-produces a scope you can quote from or hand to a build plan.
+quote it or plan the build, this skill works it out against the actual codebase: how you'd
+build each part, whether it's feasible here, what the paths and tradeoffs are, what is
+unclear, what could go wrong, and how big it is. It does not write code. It produces a scope
+you can quote from or hand to a build plan.
 
 This is the step before the detailed build plan. This answers *what, how, and how big*.
 The build plan answers *the exact steps*.
@@ -27,13 +28,14 @@ By the end of a scope you have answers to all five:
 
 1. **The ask is clear** — one plain sentence everyone agrees on.
 2. **The build is mapped** — the parts to build, and for each, how (reuse what exists or
-   build new), with the options and tradeoffs of each choice and a recommended pick.
+   build new), with the options and tradeoffs of each choice, a recommended pick, and whether
+   anything in the code would block it.
 3. **The unknowns are listed** — every unknown or undecided thing written down as a
    question, not guessed at silently.
 4. **The decisions are recorded** — the choices and questions you have answered, written
    down so they don't reopen.
 5. **A size with a confidence** — XS, S, M, or L, plus how sure you are and what would make
-   you surer.
+   you surer. An unresolved blocker holds the confidence at Low until it is confirmed.
 
 ### Procedure — the steps it follows
 
@@ -42,26 +44,36 @@ part.
 
 1. **Name it.** Restate the request in one sentence. Agree on a name, create the scope file.
 2. **Pin the ask.** Agree the one-line ask before going further.
-3. **List the parts.** Follow the feature through the system to break it into the parts that
+3. **Discovery pass (offer first).** Before listing parts, offer to send one read-only agent
+   over the codebase with a broad orienting question — where a feature like this would
+   connect, what it could reuse, what would block the obvious approach. Run it only on your
+   ok. Its findings feed the parts list and the choices. Skip the offer if the feature is a
+   trivial XS with nothing to discover. (See [The discovery pass](#the-discovery-pass).)
+4. **List the parts.** Follow the feature through the system to break it into the parts that
    each need an implementation decision. Show the list and confirm it. These parts are the
    steps you will walk.
-4. **Walk each part.** Go through the parts one at a time. For each, show the part and any
+5. **Walk each part.** Go through the parts one at a time. For each, show the part and any
    reuse-vs-build choice, then ask how to settle it. There are three ways:
    - **Decide** — you pick the approach, or confirm the recommended pick.
-   - **Tell me your approach** — you say how you plan to build it; the skill records it.
+   - **Tell me your approach** — you say how you plan to build it. Before recording it, the
+     skill checks whether the code offers a reuse path or a different seam you didn't mention;
+     if it does, it surfaces that as a choice against your approach and lets you re-decide.
    - **Explore** — the skill sends a separate agent to investigate one question, reports the
      findings back, and you decide.
-   Record the result, then move to the next part. Don't jump ahead.
-5. **Size it.** When every part is settled, give the size, confidence, and the reason. A part
+   For each part, also ask whether anything in the code would block the approach. Record the
+   result, then move to the next part. Don't jump ahead.
+6. **Size it.** When every part is settled, give the size, confidence, and the reason. A part
    settled by a decision or by exploration raises confidence; a part left high-level or
-   assumed lowers it. If it is big (L), say so and suggest splitting.
-6. **Hand off.** Offer to pass the scope to a build plan, or you quote it or shelve it. Your
+   assumed lowers it. An unresolved hard blocker forces Low confidence. If it is big (L), say
+   so and suggest splitting.
+7. **Hand off.** Offer to pass the scope to a build plan, or you quote it or shelve it. Your
    call.
 
-Three rules run through all of it: keep what is known separate from what is guessed (every
-known is tagged with where it came from); never pick a side at a choice on your own (show
-the options, recommend one, you decide); and confidence only goes up by settling parts,
-never by claiming it.
+Some rules run through all of it: work against the actual code, not just the request and
+memory (the discovery pass and the alternatives check are how); keep what is known separate
+from what is guessed (every known is tagged with where it came from); never pick a side at a
+choice on your own (show the options, recommend one, you decide); and confidence only goes up
+by settling parts, never by claiming it — an unresolved blocker holds it at Low.
 
 The rest of this file is the detail behind these steps — the lenses, the guided walk, the
 guardrails, and the sizing table.
@@ -131,6 +143,25 @@ The zipcode example, followed through:
 That walk — choice, touch point, decision — is how the skill finds the parts. Each part it
 finds becomes a step you walk in the guided walk below.
 
+### The estimate-mover checklist
+
+Run this generic list against every feature while following it through the system. Each item
+is a place a "small" feature often turns out to have hidden work — a part to build, a choice,
+or an unknown. Check each one; where it applies, it becomes a part or an unknown.
+
+- **Entry / trigger points** — is there more than one place this is entered or triggered?
+- **Data model** — does it need a new field, table, or a migration of existing data?
+- **Permissions / auth** — who is allowed to do this; does it add a rule or a role check?
+- **Background / async work** — does any of it run out of band (a job, a queue, a scheduled
+  task)?
+- **Public contract / API surface** — does it change anything other code or clients depend on?
+- **Existing tests** — which current tests would this change or break, and need updating?
+- **Config / flags** — does it need a setting, a feature flag, or an environment value?
+- **i18n / formatting** — does it show text, numbers, dates, or currency that vary by locale?
+
+Keep it generic — it is a coverage aid, not a template to paste. Items that don't apply are
+dropped, not listed as empty.
+
 ## What "how" means here
 
 "How" is the **approach**: which mechanism (reuse or build new), which building block (a
@@ -142,31 +173,59 @@ skill stops at the approach and the size.
 
 This is how the skill runs. It leads; the user settles each part.
 
-1. **Setup.** Pin the one-line ask. Then follow the feature through the system and list the
-   parts that each need an implementation decision. Show the list and confirm it. Don't read
-   code in depth here — just enough to name the parts.
+1. **Setup.** Pin the one-line ask. Then offer the discovery pass (below) before listing the
+   parts. On the user's ok, run it and use its findings. Then follow the feature through the
+   system — with the estimate-mover checklist above — and list the parts that each need an
+   implementation decision. Show the list and confirm it.
 2. **Walk one part at a time.** For each part in turn:
    - Show the part. If there is a reuse-vs-build choice, show the options with tradeoffs and
      a recommended pick.
    - Ask how the user wants to settle it. Offer three ways:
      - **Decide** — the user picks the approach, or confirms the recommended pick.
-     - **Tell me your approach** — the user says how they plan to build it; record it.
+     - **Tell me your approach** — the user says how they plan to build it. Before recording
+       it, check whether the code (from the discovery pass, or a quick focused explore) offers
+       a reuse path or a different seam the user didn't mention. If it does, surface it as a
+       choice against their approach — options, tradeoffs, a recommended pick — and let them
+       re-decide. If nothing better shows up, record their approach as stated.
      - **Explore** — send a separate agent to investigate one question (for example, "does an
        import that removes stale rows already exist?"). It reports back. Then the user
        decides.
+   - **Ask the feasibility question:** "Is there anything in the code that would block this
+     approach? (an extension point that has to exist, a hook to attach to, a framework or
+     permission constraint?)" If a blocker is possible and unconfirmed, it becomes an unknown;
+     if it is confirmed and hard, it holds the size at Low confidence until resolved.
    - Record the result in Build and Decided. Note any new unknown or risk it surfaced.
    - Move to the next part. Don't jump ahead.
 3. **Depth is per part.** A part can be settled high-level (a quick decision) or in detail
    (after exploring). The user chooses per part. You don't have to treat every part the same.
 4. **Size at the end.** Once every part is settled, size the whole feature. How each part was
-   settled sets the confidence (see The size).
+   settled sets the confidence (see The size). An unresolved hard blocker forces Low.
+
+### The discovery pass
+
+Before the parts are listed, offer one read-only pass over the codebase so the parts and the
+choices come from the actual code, not only the request and memory.
+
+- **Offer it, don't fire it automatically.** Ask: "Want me to send a read-only agent over the
+  code first, to see where this would connect and what it could reuse?" Run it only on the
+  user's ok. A pass that fires on every run takes the control gate away from the user and is
+  the reflexive fan-out the guide warns against.
+- **One agent, one broad question.** The question is orienting, not exhaustive: "where would a
+  feature like this connect in this codebase — existing mechanisms it could reuse, the entry
+  points it touches, and anything that would block the obvious approach?"
+- **Skip it for a trivial XS.** If the feature is plainly one place, a known pattern, nothing
+  to discover, skip the offer and go straight to listing the part.
+- **Feed the findings in.** Use what comes back to name the parts, seed the reuse-vs-build
+  choices, and flag feasibility. Bring it to the user before deciding anything.
+- This is one broad pass at setup. Per-part **Explore** is still focused and one question at a
+  time. Neither reads the whole codebase blindly — one orienting pass, then focused explores.
 
 ### Exploration uses a separate agent
 
-- When the user picks **Explore**, dispatch a separate agent to do the discovery and report
-  back. Don't read through the codebase in your own context.
-- Give the agent one focused question. It reads code, returns what it found with sources, and
-  flags what it could not determine.
+- The discovery pass and every **Explore** run through a separate agent. Don't read through
+  the codebase in your own context.
+- Give the agent one focused question (or, for discovery, the one broad orienting question).
+  It reads code, returns what it found with sources, and flags what it could not determine.
 - If the project ships a dedicated exploration agent, use it; otherwise use a general
   exploration agent. Stay read-only.
 - Bring the findings to the user and let them decide. The skill does not decide for them.
@@ -187,10 +246,15 @@ These come before the urge to sound confident. Follow them.
 3. **At each choice, show the options with tradeoffs, then recommend. Don't pick on your
    own.** Reuse-vs-build and which-mechanism are real decisions with consequences. Show each
    option, what it costs, what it risks, what it leaves unsolved; recommend one and say why;
-   let the user choose.
-4. **Confidence depends on unknowns.** Many open unknowns or unmade choices → Low confidence
-   → say "answer these first." You don't reach High confidence with open choices; you reach
-   it by closing them. Don't present a Low-confidence size as settled.
+   let the user choose. When the user states their own approach, first check the code for a
+   reuse path or a different seam they didn't mention; if one exists, surface it as a choice
+   against their approach before recording — don't just accept the stated path.
+4. **Confidence depends on unknowns, and a hard blocker caps it.** Many open unknowns or
+   unmade choices → Low confidence → say "answer these first." You don't reach High confidence
+   with open choices; you reach it by closing them. An unresolved hard blocker (a required
+   extension point that may not exist, a framework or permission constraint) forces Low
+   confidence regardless of how many parts are settled — the lever is "confirm the blocker."
+   Don't present a Low-confidence size as settled.
 5. **Don't pad and don't lowball.** Size the real work, including the likely cost of the
    chosen approach and the open unknowns — but mark which part is known and which is a hedge
    against what you don't know.
@@ -198,9 +262,11 @@ These come before the urge to sound confident. Follow them.
    `#assumption`, never a silent blank that quietly grows or shrinks the size.
 7. **Walk one part at a time. Don't jump ahead.** Settle the current part before moving on.
    Don't size the feature until every part is settled or explicitly left high-level.
-8. **Explore only when the user asks, through a separate agent.** Don't read the codebase in
-   your own context. When the user picks Explore, send a separate agent with one focused
-   question; it reports back; the user decides.
+8. **Read the codebase through a separate agent, and offer before you dispatch.** Don't read
+   the codebase in your own context. The discovery pass at setup is offered and run only on
+   the user's ok; per-part Explore runs only when the user picks it. Either way, send a
+   separate agent with the question; it reports back; the user decides. Don't fan out to read
+   everything — one broad discovery pass, then focused explores.
 9. **Read-only.** This skill never edits code. It reads code and patterns (through the explore
    agent) to back up the scope and writes only to `.plans`. Building comes later, not here.
 
@@ -283,7 +349,13 @@ This block is the at-a-glance view; it is the same thing you re-print on resume.
 |------------|------|
 | **High**   | every part settled by a decision or exploration; backed by `#code` / `#user` / `#pattern` |
 | **Medium** | most parts settled, but some left high-level or resting on an `#assumption` |
-| **Low**    | parts still open, or settled only by guesses; the size is a guess — **settle them before quoting** |
+| **Low**    | parts still open, settled only by guesses, or an unresolved hard blocker stands; the size is a guess — **settle them before quoting** |
+
+**The feasibility gate.** An unresolved hard blocker forces **Low confidence** no matter how
+many parts are settled — a required extension point that may not exist, a hook with nothing to
+attach to, a framework or permission constraint that could stop the approach. The size is not
+trustworthy while the approach might not be buildable here. The lever is always "confirm the
+blocker" (usually an Explore). Once confirmed present, or ruled out, confidence can rise.
 
 **If, once the parts are listed, the feature is clearly XS with nothing to settle**, say so
 and offer to go straight to building or quoting instead of walking each part.
@@ -337,8 +409,11 @@ The user may also quote it, defer it, or drop the feature.
   writes only to `.plans`. Never edits.
 - **Guided, one part at a time.** The user settles each part — by deciding, stating an
   approach, or asking to explore — before the size. Don't jump ahead.
-- **Explore through a separate agent, only when asked.** Don't read the codebase in your own
-  context.
+- **Read the code through a separate agent, offered before it runs.** A broad discovery pass
+  at setup, then focused per-part explores — both offered and run on the user's ok. Don't read
+  the codebase in your own context, and don't fan out to read everything.
+- **Feasibility is checked per part.** Ask whether anything in the code would block the
+  approach; an unresolved hard blocker holds the size at Low confidence.
 - **"How" is the approach**, never file-by-file work.
 - **Honest sizing.** Never a bare size; always size, confidence, reason, and the lever.
 - **Choices get options, tradeoffs, and a pick** — recommend, don't decide for the user.

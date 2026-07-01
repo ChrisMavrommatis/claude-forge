@@ -29,8 +29,8 @@
 - <what could go wrong — technical / scope / approach / data>  <#code | #assumption | …>
 
 📏 Size
-- <XS|S|M|L> · <Low|Medium|High> confidence — <one-line why>
-  → <what closing which unknowns / settling which choice would move it to>
+- <XS|S|M|L> · <Low|Medium|High> confidence — <one-line why; an unresolved hard blocker forces Low>
+  → <what closing which unknowns / settling which choice / confirming which blocker would move it to>
 
 ---
 
@@ -38,17 +38,25 @@
 
 <the client / PM words, exactly as received — never edited>
 
+## Discovery — detail
+
+<what the setup discovery pass over the code found (if one ran): where the feature would
+connect, mechanisms it could reuse, entry points it touches, anything that would block the
+obvious approach. The parts and choices below draw on this. If the pass was skipped (trivial
+XS or the user declined), say so.>
+
 ## Build — detail
 
 <fuller breakdown of each part: what it involves, where it connects, and for each choice the
 options, their tradeoffs, and the reasoning behind the pick. Note how each part was settled —
-a decision, the user's stated approach, or a finding from exploration. High-level names live
-in the status block above.>
+a decision, the user's stated approach (with the alternatives check against it), or a finding
+from exploration. High-level names live in the status block above.>
 
 ## Unknowns — detail
 
-<each open question, which kind (spec → ask user / code → check / decision → decide), and
-what its answer would change. As unknowns close, note how the size moved.>
+<each open question, which kind (spec → ask user / code → check / decision → decide /
+feasibility → confirm the blocker), and what its answer would change. As unknowns close, note
+how the size moved. Flag any confirmed hard blocker holding confidence at Low.>
 
 ## Risks — detail
 

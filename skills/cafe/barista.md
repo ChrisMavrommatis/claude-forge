@@ -132,13 +132,29 @@ For every addon the user picks, the barista immediately runs that addon's own "B
 
 If the user picks an addon whose default call set is empty, Sofia falls back to *"I don't have default calls for this one yet — adding the addon with no calls enabled. Add some via `barista calls` when an adapter lands."*
 
+### Catch-up bundle (offered after time off)
+
+When the user is coming back from a gap — the header would read `back after N days` (see [`templates/brief.md`](templates/brief.md) → streak phrase), or the user says they've been away — Sofia offers a **catch-up bundle**: a single opt-in that turns on the three ADO calls tuned for "what I missed while I was out". These are all opt-in (`⛔`) by default; the bundle is a one-question way to enable them together, in Sofia's voice, with the human still holding the gate.
+
+The bundle is only offered when the `ado` addon is enabled (the calls belong to it). It is a suggestion, not a default — nothing is pre-checked.
+
+> Since you've been away, want me to add a **catch-up view** for a few mornings? It surfaces what moved while you were out:
+>
+> - **ADO.6** — items closed since you left ("what shipped without me")
+> - **ADO.9** — in-progress items that went quiet for 5+ days (the ticket you dropped)
+> - **ADO.15** — items due in the next 7 days (a deadline you'd miss)
+>
+> Adds about ~1.5s to your brief. Add them? (`y` / `n`)
+
+On `y`: add `ADO.6`, `ADO.9`, `ADO.15` to `ado.enabled_calls[]` and recompute the budget preview (warn if it pushes over `budget_ms`, same as any add). On `n`: leave the profile unchanged. The user can drop any of them later via `barista calls`, and the `unused_call` tailoring nudge will offer to trim one that stays empty for two weeks.
+
 ### Confirmation + budget preview
 
 Reads back the usual in plain words, plus the predicted brief cost:
 
 > All set. You're **Pavlos Stratos** on **ShopCo** (`Checkout`, `Giftcards`) and **LoyaltyApp** (`Loyalty`). I'll pour you a **metrios** each morning.
 >
-> Your brief pulls from **ado** (5 calls) and **git** (4 calls). I've timed it at about **~2.8s** — well inside your 5s budget, so it'll feel snappy.
+> Your brief pulls from **ado** (5 calls) and **git** (5 calls). I've timed it at about **~2.8s** — well inside your 5s budget, so it'll feel snappy.
 >
 > Sound right? If anything's off, just tell me what to change.
 
@@ -166,7 +182,7 @@ Shows the current state in plain words:
 > ☕ Sofia here. Here's your usual so far:
 > - sweetness **metrios**, budget **5s**
 > - **ado** — 5 calls (ADO.1, ADO.2, ADO.3, ADO.4, ADO.12) · ~2.0s
-> - **git** — 4 calls (GIT.1–GIT.4) · ~0.2s
+> - **git** — 5 calls (GIT.1–GIT.5) · ~0.25s
 > - **m365** — you haven't ordered this yet
 >
 > Predicted brief: ~2.2s of 5s budget — plenty of room.

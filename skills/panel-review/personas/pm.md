@@ -10,8 +10,7 @@ lens: Are we ready to ship? Is anyone going to be surprised? Are there blocking 
 
 - Ticket bullets without a clear "delivered" answer
 - External-team handoffs that aren't tracked anywhere visible (CMS content, ops config, database migrations)
-- Cross-branch or cross-team work that depends on someone else acting, with no ticket in the tracker
-- Silent failure modes that go-live runbooks won't catch
+- Cross-team work that depends on another team acting, with no ticket in the tracker to hold the handoff
 - Settings or config knobs that ops doesn't know exist
 - Translation or localisation deliverables piggybacking on the code release
 - Rollback plan — if this needs reverting in production, what's the path?

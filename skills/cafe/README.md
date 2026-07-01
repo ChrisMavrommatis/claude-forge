@@ -1,6 +1,8 @@
 # cafe
 
-A personal morning-brief skill for Claude Code. You've been away a few days and want to know the state of your projects before you start work.
+What you'd otherwise miss after time away — served the way you order your coffee.
+
+A personal morning-brief skill for Claude Code. You've been away a few days; cafe pulls together what moved while you were out — PRs waiting on you, replies on your PRs, red builds, work that shipped, a dirty local tree — before you start work.
 
 One screen. Plain English. Read-only.
 
@@ -27,7 +29,7 @@ Full invocation in [SKILL.md](SKILL.md).
 
 | Section            | What's in it                                                          |
 | ------------------ | --------------------------------------------------------------------- |
-| 📰 Since you left  | Commits on `main` / active branches in your repos.                    |
+| 📰 Since you left  | Commits on `main` / active branches in your repos, plus uncommitted work left in your local tree. |
 | 📬 Your inbox      | PRs waiting on you + your own PRs with comments / red builds.         |
 | 📋 Your queue      | Work items assigned to you.                                           |
 | 🚧 Builds          | `main` and your-branch status — only when red.                        |
