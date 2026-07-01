@@ -6,7 +6,7 @@ One file per data-source / integration. Each addon owns its own top-level block 
 
 - [`ado.md`](ado.md) — Azure DevOps. PRs, work items, builds, iterations, releases. The brief's main data source.
 - [`git.md`](git.md) — local git. Commits, branches, status, builds via repo CI. Default-on.
-- [`m365.md`](m365.md) — Microsoft 365 (`claude.ai/Microsoft 365` connector). Email surface live (M365.1–M365.6); calendar / Teams / SharePoint surfaces visible on the connector and queued as future catalog entries under this same addon.
+- [`m365.md`](m365.md) — Microsoft 365 (`claude.ai/Microsoft 365` connector). Email + calendar surfaces live (M365.1–M365.7); Teams / SharePoint / meeting-availability surfaces visible on the connector and queued as future catalog entries under this same addon.
 
 ## Ideas for future addons
 
@@ -18,7 +18,7 @@ One file per data-source / integration. Each addon owns its own top-level block 
 
 Each stub addon needs a focused investigation to upgrade it to a working adapter. One agent per addon — see the addon's own status block for what's known and what's pending.
 
-- **m365 — calendar surface.** Investigate `outlook_calendar_search` + `find_meeting_availability` schemas. Catalog as M365.7+ under [`m365.md`](m365.md).
+- **m365 — meeting-availability surface.** Investigate `find_meeting_availability` schema (calendar search is live as M365.7). Catalog as additional M365-entries under [`m365.md`](m365.md).
 - **m365 — Teams chat surface.** Investigate `chat_message_search`. Catalog as additional M365-entries.
 - **m365 — SharePoint surface.** Investigate `sharepoint_search` + `sharepoint_folder_search`. Catalog as additional M365-entries.
 

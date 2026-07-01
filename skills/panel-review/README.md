@@ -112,8 +112,9 @@ The skill ships with two veto-eligible personas, `security` and
 behaviour, add them explicitly, e.g.
 `/panel-review --personas=dev,techlead,qa,pm,client,security,contract`.
 Other personas can be made veto-eligible by editing their files (see
-[veto.md](veto.md)). `contract`'s veto-eligibility is a provisional
-call, flagged in the file to revisit.
+[veto.md](veto.md)). `contract` vetoes narrowly — only on irreversible /
+destructive breaks (data-loss migrations); recoverable external breaks
+(API shape, required fields, event payloads) are `[BLOCK]`, not vetoes.
 
 ## Design principles
 

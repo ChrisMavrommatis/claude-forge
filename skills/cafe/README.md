@@ -33,7 +33,7 @@ Full invocation in [SKILL.md](SKILL.md).
 | 📬 Your inbox      | PRs waiting on you + your own PRs with comments / red builds.         |
 | 📋 Your queue      | Work items assigned to you.                                           |
 | 🚧 Builds          | `main` and your-branch status — only when red.                        |
-| 🌊 Drift           | Branch behind `main`, `.plans/*.md` whose referenced files have moved.|
+| 🌊 Drift           | Branch behind `main`; plus `.plans/*.md` file moves *(when GIT.11 is defined)*.|
 | 🎯 Pick of the day | One thing to do next.                                                 |
 
 Section vocabulary, voice, and pick-of-day priority all live in [`templates/brief.md`](templates/brief.md) — edit there to change what the brief looks like.

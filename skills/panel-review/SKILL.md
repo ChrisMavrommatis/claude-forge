@@ -290,12 +290,12 @@ Followed by an iteration prompt (see below).
 
   PERSONA      VERDICT     REASON
   ─────────────────────────────────────────────────────────────
-  DEV          ✓ SHIP      clean impl, conventions respected
-  TECH LEAD    ✓ SHIP      fits existing pipeline shape
+  DEV          ✓ SHIP      null paths in OrderSvc checked
+  TECH LEAD    ✓ SHIP      fits the OrderPipeline seam
   QA           ✓ SHIP      tests cover the new branches
-  PM           ✓ SHIP      scope matches the ticket
-  CLIENT       ✓ SHIP      no user-visible regression
-  JUNIOR       ✓ SHIP      could follow it without asking
+  PM           ✓ SHIP      all 3 ticket bullets covered
+  CLIENT       ✓ SHIP      checkout UI unchanged
+  JUNIOR       ✓ SHIP      read OrderSvc end to end
 
 
   Want details? Reply with:
