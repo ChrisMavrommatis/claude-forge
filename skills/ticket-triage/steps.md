@@ -47,6 +47,12 @@ supports; keep the rest as ❓ Maybe. A clue with no source is not a fact — it
 **Investigation rule:** one focused probe, then report back. Say what you're about to
 check before you check it. Don't go into a long dig unless the user says go on.
 
+**Evidence you can't reach:** some clues aren't in the code — repro steps, the actual
+error or stack trace, a data sample, which environment, or what the ticket author
+meant. When a ❓ or 🔲 can only be closed by the user, say so and tell them exactly
+what to get and why it moves the picture. Prefer the cheapest evidence that turns a ❓
+into a ✅. Don't guess to fill the gap, and don't stall silently.
+
 **Leave it:** when the problem is named and backed by at least one source, or when
 you've hit a wall and need the user. Ask: *"ready to explain why this happens?"* — or,
 if stuck, list the OPEN questions and ask how to proceed.

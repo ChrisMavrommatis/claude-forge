@@ -87,12 +87,14 @@ feature-scope/
 
 ## Install
 
+From the repo root, using the installer in [`bin/`](../../bin/README.md):
+
 ```bash
 # Linux / Mac
-cp -r skills/feature-scope ~/.claude/skills/
+bin/install.sh feature-scope
 
 # Windows (PowerShell)
-Copy-Item -Recurse skills\feature-scope $env:USERPROFILE\.claude\skills\
+bin\install.ps1 feature-scope
 ```
 
 See the parent [README](../../README.md) for repo-level context.

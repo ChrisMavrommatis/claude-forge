@@ -132,15 +132,16 @@ personas can be made veto-eligible by editing their files (see
 
 ## Install
 
-The skill lives in this repo. Until the repo's installer lands, copy
-it manually into `~/.claude/skills/`:
+From the repo root, using the installer in [`bin/`](../../bin/README.md):
 
 ```bash
 # Linux / Mac
-cp -r skills/panel-review ~/.claude/skills/
+bin/install.sh panel-review
 
 # Windows (PowerShell)
-Copy-Item -Recurse skills\panel-review $env:USERPROFILE\.claude\skills\
+bin\install.ps1 panel-review
 ```
 
-See the parent [README](../../README.md) for repo-level context.
+It honours this skill's `.skillignore`, so `AGENT.md` and `README.md` are left
+out of the runtime copy. See the parent [README](../../README.md) for
+repo-level context.

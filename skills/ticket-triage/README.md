@@ -49,12 +49,14 @@ ticket-triage/
 
 ## Install
 
+From the repo root, using the installer in [`bin/`](../../bin/README.md):
+
 ```bash
 # Linux / Mac
-cp -r skills/ticket-triage ~/.claude/skills/
+bin/install.sh ticket-triage
 
 # Windows (PowerShell)
-Copy-Item -Recurse skills\ticket-triage $env:USERPROFILE\.claude\skills\
+bin\install.ps1 ticket-triage
 ```
 
 See the parent [README](../../README.md) for repo-level context.

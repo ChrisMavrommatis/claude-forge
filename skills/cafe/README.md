@@ -78,12 +78,14 @@ cafe/
 
 ## Install
 
+From the repo root, using the installer in [`bin/`](../../bin/README.md):
+
 ```bash
 # Linux / Mac
-cp -r skills/cafe ~/.claude/skills/
+bin/install.sh cafe
 
 # Windows (PowerShell)
-Copy-Item -Recurse skills\cafe $env:USERPROFILE\.claude\skills\
+bin\install.ps1 cafe
 ```
 
 Then `/cafe` from any Claude Code session. The barista does first-run setup.

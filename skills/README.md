@@ -16,4 +16,5 @@ any supporting assets (personas, templates, etc).
 
 1. Create `skills/<name>/` with a `SKILL.md` inside.
 2. Add a row to the index above.
-3. The installer (once built) picks it up automatically from the folder name.
+3. The installer ([`bin/`](../bin/README.md)) picks it up automatically from the
+   folder name — `bin/install.ps1 <name>` or `bin/install.sh <name>`.
